@@ -13,6 +13,8 @@ const querySchema = new mongoose.Schema(
     status: { type: String, enum: ['waiting', 'completed'], default: 'waiting', index: true },
     // Estimated time to resolution in minutes (optional)
     etaMinutes: { type: Number, min: 0 },
+    // User rating 1-5 (optional)
+    rating: { type: Number, min: 1, max: 5 },
   },
   { timestamps: true }
 );

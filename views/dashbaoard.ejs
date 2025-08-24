@@ -223,6 +223,38 @@
                         <i class="fa-solid fa-image text-3xl"></i>
                       </div>
                     <% } %>
+
+                    <!-- Update House Picture Form -->
+                    <form action="/houses/<%= firstHouse._id %>/image" method="POST" enctype="multipart/form-data" class="mt-4">
+                      <input type="hidden" name="userId" value="<%= userId || '' %>">
+                      <% if (user) { %>
+                        <input type="hidden" name="firstName" value="<%= user.firstName %>">
+                        <input type="hidden" name="lastName" value="<%= user.lastName %>">
+                        <input type="hidden" name="email" value="<%= user.email %>">
+                        <input type="hidden" name="phone" value="<%= user.phone %>">
+                      <% } %>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="image-update">Update House Picture</label>
+                        <div class="flex items-center justify-center px-6 py-3 border-2 border-dashed border-gray-300 rounded-xl">
+                          <div class="space-y-1 text-center">
+                            <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-2xl mx-auto"></i>
+                            <div class="flex text-sm text-gray-600">
+                              <label for="image-update" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none">
+                                <span>Choose a new file</span>
+                                <input id="image-update" name="image" type="file" class="sr-only" accept="image/*" />
+                              </label>
+                              <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                          </div>
+                        </div>
+                      </div>
+                      <button type="submit" class="mt-3 w-full bg-primary-600 text-white py-2.5 rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center">
+                        <i class="fa-solid fa-rotate mr-2"></i> Update Picture
+                      </button>
+                    </form>
+
                     <a href="#your-queries" class="mt-3 inline-flex items-center text-primary-600 hover:text-primary-500 text-sm font-medium">
                       View your queries <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                     </a>
@@ -380,17 +412,17 @@
                               <span class="text-xs text-gray-500">(<%= q.rating %>/5)</span>
                             </div>
                           <% } else { %>
-                            <form action="/queries/<%= q._id %>/rate" method="POST" class="flex items-center space-x-2" onsubmit="this.querySelector('button[type=submit]').classList.add('hidden'); var s=this.querySelector('.submitting'); if(s){ s.classList.remove('hidden'); }">
-                              <label class="text-sm text-gray-700">Rate this support:</label>
-                              <select name="rating" class="px-2 py-1 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-600">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3" selected>3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                              </select>
-                              <button type="submit" class="text-sm bg-primary-600 text-white px-3 py-1 rounded-lg hover:bg-primary-700">Submit Rating</button>
-                              <span class="submitting text-xs text-gray-500 hidden">Submitting...</span>
+                            <form action="/queries/<%= q._id %>/rate" method="POST" class="rating-form flex items-center space-x-2">
+                              <span class="text-sm text-gray-700 mr-1">Rate this support:</span>
+                              <div class="flex items-center">
+                                <% for (var i = 1; i <= 5; i++) { %>
+                                  <button type="submit" name="rating" value="<%= i %>" data-value="<%= i %>" aria-label="Rate <%= i %> stars"
+                                          class="star-btn mx-0.5 text-xl leading-none transition-colors focus:outline-none"
+                                          style="line-height: 1">
+                                    <span class="star-icon text-gray-400">★</span>
+                                  </button>
+                                <% } %>
+                              </div>
                             </form>
                           <% } %>
                         </div>
@@ -439,6 +471,34 @@
           }
         });
       }
+
+      // Star rating hover highlight
+      document.querySelectorAll('.rating-form').forEach((form) => {
+        const buttons = Array.from(form.querySelectorAll('.star-btn'));
+        buttons.forEach((btn, idx) => {
+          btn.addEventListener('mouseenter', () => {
+            buttons.forEach((b, i) => {
+              const icon = b.querySelector('.star-icon');
+              if (!icon) return;
+              if (i <= idx) {
+                icon.classList.add('text-yellow-500');
+                icon.classList.remove('text-gray-400');
+              } else {
+                icon.classList.add('text-gray-400');
+                icon.classList.remove('text-yellow-500');
+              }
+            });
+          });
+          btn.addEventListener('mouseleave', () => {
+            buttons.forEach((b) => {
+              const icon = b.querySelector('.star-icon');
+              if (!icon) return;
+              icon.classList.add('text-gray-400');
+              icon.classList.remove('text-yellow-500');
+            });
+          });
+        });
+      });
     });
   </script>
 </body>

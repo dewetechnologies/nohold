@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About - NoHold Telkom</title>
+  <!-- Modern CSS approach with Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: '#f59e0b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.5s ease-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(10px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style type="text/css">
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    }
+    .hero-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .stat-number {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .team-member {
+      transition: all 0.3s ease;
+    }
+    .team-member:hover {
+      transform: translateY(-8px);
+    }
+    .team-member img {
+      transition: all 0.3s ease;
+    }
+    .team-member:hover img {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body class="font-sans bg-gray-50 antialiased">
+  <%- include('partials/navbar') %>
+
+  <div class="site-content">
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20 text-center relative overflow-hidden" style="background-image: url('https://wallpapers.com/images/high/high-resolution-blue-background-1920-x-1200-5r9ckl2zujtomuo5.webp'); background-size: cover; background-position: center;">
+      <div class="absolute inset-0 bg-black opacity-10 pointer-events-none"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-slide-up">About NoHold Telkom</h1>
+        <p class="text-xl max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
+          Learn about our mission to transform customer service in South Africa through innovative technology
+        </p>
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 h-16 bg-white transform skew-y-2 translate-y-8 z-20 pointer-events-none"></div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center gap-10 max-w-6xl mx-auto">
+          <div class="md:w-1/2">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Our Mission</h2>
+            <p class="text-lg text-gray-700 mb-6">
+              NoHold Telkom was created to eliminate the frustration of long hold times and inaccessible customer service. We believe everyone deserves prompt, efficient support regardless of their location or device.
+            </p>
+            <p class="text-lg text-gray-700">
+              Our platform integrates WhatsApp, USSD, and web technologies to deliver seamless customer service experiences across South Africa, making support accessible to everyone.
+            </p>
+          </div>
+          <div class="md:w-1/2">
+            <div class="bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl p-8 h-full">
+              <div class="flex items-center justify-center h-full">
+                <div class="text-center">
+                  <div class="inline-flex items-center justify-center w-20 h-20 bg-primary-600 text-white rounded-2xl text-3xl mb-6">
+                    <i class="fa-solid fa-bullseye"></i>
+                  </div>
+                  <h3 class="text-2xl font-semibold mb-4">Customer First</h3>
+                  <p class="text-gray-700">Putting South African customers at the center of everything we do</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Our Values</h2>
+        <p class="text-xl text-center text-gray-600 max-w-3xl mx-auto mb-12">These principles guide everything we do at NoHold Telkom</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 text-green-600 rounded-xl text-2xl mb-6">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4">Innovation</h3>
+            <p class="text-gray-600">We continuously explore new technologies and approaches to improve customer service experiences.</p>
+          </div>
+          
+          <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 text-blue-600 rounded-xl text-2xl mb-6">
+              <i class="fa-solid fa-handshake"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4">Accessibility</h3>
+            <p class="text-gray-600">We believe quality support should be available to everyone, regardless of their device or location.</p>
+          </div>
+          
+          <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-100 text-purple-600 rounded-xl text-2xl mb-6">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4">Empathy</h3>
+            <p class="text-gray-600">We design our services with genuine care for customer frustrations and needs.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Our Team</h2>
+        <p class="text-xl text-center text-gray-600 max-w-3xl mx-auto mb-12">The passionate people behind NoHold Telkom</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          <div class="text-center team-member">
+            <div class="rounded-2xl overflow-hidden mb-4 shadow-md">
+              <img src="https://detwet.com/Pro.jpg" alt="Team Member" class="w-full h-64 object-cover">
+            </div>
+            <h3 class="text-xl font-semibold">Leon Motaung</h3>
+            <p class="text-primary-600">CEO & Founder</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo Notice -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8 md:p-12 text-center">
+          <div class="inline-flex items-center justify-center w-20 h-20 bg-yellow-100 text-yellow-600 rounded-2xl text-3xl mb-6">
+            <i class="fa-solid fa-flask"></i>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-6">Demo Application</h2>
+          <p class="text-xl text-gray-700 mb-6">
+            This is a demonstration application showcasing key experiences such as query submission, user dashboard, and callback workflows.
+          </p>
+          <p class="text-lg text-gray-600">
+            Our goal is to illustrate how NoHold Telkom can transform customer service experiences for South Africans.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">Experience the Future of Customer Service</h2>
+        <p class="text-xl max-w-3xl mx-auto mb-10">Join thousands of satisfied customers who have eliminated hold times from their lives</p>
+        <a href="/contact" class="bg-accent text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-yellow-500 transition-colors text-lg inline-flex items-center justify-center mx-2">
+          <i class="fa-solid fa-phone mr-2"></i> Request a Callback
+        </a>
+        <a href="/contact" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-primary-600 transition-colors text-lg inline-flex items-center justify-center mx-2">
+          <i class="fa-solid fa-envelope mr-2"></i> Contact Us
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <%- include('partials/footer') %>
+  
+  <script>
+    // Add animations when elements come into view
+    document.addEventListener('DOMContentLoaded', function() {
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+      };
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-fade-in');
+          }
+        });
+      }, observerOptions);
+      
+      // Observe all cards and team members
+      document.querySelectorAll('.card-hover, .team-member').forEach(el => {
+        observer.observe(el);
+      });
+    });
+  </script>
+</body>
+</html>

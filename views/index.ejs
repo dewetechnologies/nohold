@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoHold Telkom - Modern Customer Support</title>
+  <!-- Modern CSS approach with Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: '#f59e0b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.5s ease-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(10px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style type="text/css">
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    }
+    .hero-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .stat-number {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body class="font-sans bg-gray-50 antialiased">
+  <!-- Navigation Bar -->
+  <%- include('partials/navbar') %>
+  
+  <div class="site-content">
+    <!-- Sign-In Modal (Modernized) -->
+    <div id="signInModal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+      <div class="modal-content bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-transform duration-300 scale-95">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-semibold text-gray-800">Sign In to NoHold Telkom</h3>
+          <button id="closeModalBtn" class="text-gray-500 hover:text-gray-800 transition-colors">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+        <form class="space-y-5">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email or Phone</label>
+            <input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition" placeholder="Enter email or phone">
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition" placeholder="Enter password">
+          </div>
+          <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors">Sign In</button>
+        </form>
+        <p class="mt-6 text-center text-sm text-gray-600">Don't have an account? <a href="/signup" class="text-primary-600 hover:text-primary-800 font-medium transition-colors">Sign up</a></p>
+      </div>
+    </div>
+
+    <!-- Header / Hero Section -->
+    <header class="gradient-bg text-white py-24 text-center relative overflow-hidden" style="background-image: url('https://img.freepik.com/free-vector/blank-blue-halftone-background_53876-114466.jpg'); background-size: cover; background-position: center;">
+      <div class="absolute inset-0 bg-black opacity-10"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-slide-up">NoHold Telkom</h1>
+        <p class="text-xl md:text-2xl mb-6 animate-slide-up" style="animation-delay: 0.1s">Help, without the wait.</p>
+        <p class="text-lg md:text-xl mb-10 max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.2s">Say goodbye to long hold times. With NoHold Telkom, request a callback through WhatsApp, USSD, or our website, and connect with a Telkom agent at your convenience.</p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4 animate-slide-up" style="animation-delay: 0.3s">
+          <a href="https://img.freepik.com/free-vector/blank-blue-halftone-background_53876-114466.jpg" id="openSignInBtn" class="bg-accent text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-yellow-500 transition-colors text-lg inline-flex items-center justify-center">
+            <i class="fa-solid fa-phone mr-2"></i> Request a Callback
+          </a>
+          <a href="#how-it-works" class="bg-white bg-opacity-10 backdrop-blur-sm border-2 border-white border-opacity-30 text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:bg-opacity-20 transition-colors text-lg inline-flex items-center justify-center">
+            <i class="fa-solid fa-circle-info mr-2"></i> Learn More
+          </a>
+        </div>
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 h-16 bg-white transform skew-y-2 translate-y-8 z-20"></div>
+    </header>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">How NoHold Telkom Works</h2>
+          <p class="text-xl text-gray-600">Our innovative callback system ensures you get personalized support without the frustration of waiting on hold. Follow these three simple steps.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center p-8 feature-card bg-gray-50 rounded-2xl card-hover">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-primary-100 text-primary-600 rounded-2xl text-3xl mb-6">
+              <i class="fa-solid fa-message"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4">Request a Callback</h3>
+            <p class="text-gray-600">Send a message via WhatsApp, USSD (*180#), or the Telkom website. Share your issue, and we'll take it from there.</p>
+          </div>
+          <div class="text-center p-8 feature-card bg-gray-50 rounded-2xl card-hover">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-primary-100 text-primary-600 rounded-2xl text-3xl mb-6">
+              <i class="fa-regular fa-clock"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4">Confirm Your Time</h3>
+            <p class="text-gray-600">Select a convenient callback time. Our system confirms your slot and matches you with the right agent.</p>
+          </div>
+          <div class="text-center p-8 feature-card bg-gray-50 rounded-2xl card-hover">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-primary-100 text-primary-600 rounded-2xl text-3xl mb-6">
+              <i class="fa-solid fa-headset"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4">Connect with an Agent</h3>
+            <p class="text-gray-600">Receive a call from a Telkom expert ready to resolve your billing, technical, or account query efficiently.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Features Section -->
+    <section class="py-20 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Why Choose NoHold Telkom?</h2>
+          <p class="text-xl text-gray-600">Our service is built to make customer support seamless, accessible, and efficient for all South Africans.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
+              <i class="fa-solid fa-comments"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Multiple Channels</h3>
+            <p class="text-gray-600">Request support via WhatsApp, USSD, or our website, giving you flexibility to choose your preferred platform.</p>
+          </div>
+          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Smart Issue Routing</h3>
+            <p class="text-gray-600">Our AI-driven system directs your query to the right department for quick and accurate resolution.</p>
+          </div>
+          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
+              <i class="fa-regular fa-calendar-check"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Scheduled Callbacks</h3>
+            <p class="text-gray-600">Choose a time that suits you, and we'll confirm your callback to ensure you're never left waiting.</p>
+          </div>
+          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
+              <i class="fa-solid fa-language"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Multilingual Support</h3>
+            <p class="text-gray-600">Get help in eight South African languages, ensuring clear and comfortable communication.</p>
+          </div>
+          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
+              <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Universal Compatibility</h3>
+            <p class="text-gray-600">Accessible on smartphones and basic phones, making support available to everyone, everywhere.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customer Success Section -->
+    <section class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Our Impact in Numbers</h2>
+          <p class="text-xl text-gray-600">NoHold Telkom is transforming customer service with impressive results, from handling millions of calls to boosting satisfaction across South Africa.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center p-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl">
+            <h3 class="text-5xl font-bold mb-4 stat-number">46.48%</h3>
+            <p class="text-lg text-gray-700">of calls handled automatically, processing over 1 million calls monthly with efficiency.</p>
+          </div>
+          <div class="text-center p-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl">
+            <h3 class="text-5xl font-bold mb-4 stat-number">71%</h3>
+            <p class="text-lg text-gray-700">positive customer sentiment, reflecting high satisfaction with Telkom services.</p>
+          </div>
+          <div class="text-center p-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl">
+            <h3 class="text-5xl font-bold mb-4 stat-number">42%</h3>
+            <p class="text-lg text-gray-700">increase in first-contact resolution, ensuring issues are resolved quickly.</p>
+          </div>
+        </div>
+        <p class="text-center text-sm mt-12 text-gray-500">*Metrics based on Telkom's broader customer service initiatives and NOHOLD's AI implementation.</p>
+      </div>
+    </section>
+
+    <!-- Why It Matters Section -->
+    <section class="py-20 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Why NoHold Telkom Matters</h2>
+          <p class="text-xl text-gray-600">We're redefining customer service by putting you first, with measurable improvements that make a difference.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="p-8 bg-white rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-green-100 text-green-600 rounded-xl text-xl mb-4">
+              <i class="fa-solid fa-gauge-high"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-3">40% Faster Support</h3>
+            <p class="text-gray-600">Callback requests reduce waiting times by up to 40%, getting you help faster.</p>
+          </div>
+          <div class="p-8 bg-white rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-green-100 text-green-600 rounded-xl text-xl mb-4">
+              <i class="fa-solid fa-phone-slash"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-3">Fewer Dropped Calls</h3>
+            <p class="text-gray-600">Scheduled callbacks eliminate dropped calls, ensuring reliable support.</p>
+          </div>
+          <div class="p-8 bg-white rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-green-100 text-green-600 rounded-xl text-xl mb-4">
+              <i class="fa-solid fa-globe"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-3">Inclusive Access</h3>
+            <p class="text-gray-600">Support for basic phones and multiple languages reaches all South Africans.</p>
+          </div>
+          <div class="p-8 bg-white rounded-2xl shadow-sm card-hover">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-green-100 text-green-600 rounded-xl text-xl mb-4">
+              <i class="fa-solid fa-handshake"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-3">Trusted Service</h3>
+            <p class="text-gray-600">Our customer-first approach boosts trust and satisfaction, with 71% positive feedback.</p>
+          </div>
+        </div>
+        <div class="text-center mt-16">
+          <a href="#" class="bg-primary-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-primary-700 transition-colors inline-flex items-center text-lg">
+            <i class="fa-solid fa-star mr-2"></i> Experience the Difference
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">What Our Customers Say</h2>
+          <p class="text-xl text-gray-600">Hear from real customers who have experienced the NoHold Telkom difference.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="p-8 bg-gray-50 rounded-2xl card-hover">
+            <div class="flex items-center mb-4 text-yellow-400">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-gray-600 italic mb-6">"NoHold Telkom saved me hours! I got a callback at my chosen time, and my issue was resolved quickly."</p>
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold mr-3">SM</div>
+              <div>
+                <p class="font-semibold">Sipho M.</p>
+                <p class="text-sm text-gray-500">Johannesburg</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-8 bg-gray-50 rounded-2xl card-hover">
+            <div class="flex items-center mb-4 text-yellow-400">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-gray-600 italic mb-6">"Speaking in isiZulu made all the difference. The agent understood my needs perfectly."</p>
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold mr-3">TN</div>
+              <div>
+                <p class="font-semibold">Thandiwe N.</p>
+                <p class="text-sm text-gray-500">Durban</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-8 bg-gray-50 rounded-2xl card-hover">
+            <div class="flex items-center mb-4 text-yellow-400">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-gray-600 italic mb-6">"Using USSD on my old phone was so simple. NoHold Telkom works for everyone."</p>
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold mr-3">DK</div>
+              <div>
+                <p class="font-semibold">David K.</p>
+                <p class="text-sm text-gray-500">Cape Town</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <%- include('partials/call-cta') %>
+  
+  <!-- Footer -->
+  <%- include('partials/footer') %>
+  
+  <script>
+    // Modern JavaScript for modal functionality and page motions
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('signInModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      
+      // Function to open modal
+      function openModal() {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100');
+        modal.querySelector('.modal-content').classList.remove('scale-95');
+        modal.querySelector('.modal-content').classList.add('scale-100');
+      }
+      
+      // Function to close modal
+      function closeModal() {
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.querySelector('.modal-content').classList.remove('scale-100');
+        modal.querySelector('.modal-content').classList.add('scale-95');
+      }
+      
+      // Close modal when clicking the close button
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeModal);
+      }
+      
+      // Close modal when clicking outside the modal content
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+      
+      // Add animation to elements on scroll
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+      };
+
+      // Open /signin from hero CTA (no modal)
+      const openBtn = document.getElementById('openSignInBtn');
+      if (openBtn) {
+        openBtn.addEventListener('click', function(e){
+          e.preventDefault();
+          window.location.href = '/signin';
+        });
+      }
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            // choose animation based on element type
+            if (el.matches('h1, h2, h3, header .container > *')) {
+              el.classList.add('animate-slide-up');
+            } else if (el.matches('p, .success-metric')) {
+              el.classList.add('animate-fade-in');
+            } else {
+              el.classList.add('animate-slide-up');
+            }
+            el.classList.remove('opacity-0');
+            observer.unobserve(el);
+          }
+        });
+      }, observerOptions);
+
+      // Targets to animate on scroll
+      const targets = [
+        ...document.querySelectorAll('section h2'),
+        ...document.querySelectorAll('section p'),
+        ...document.querySelectorAll('.feature-card'),
+        ...document.querySelectorAll('.success-metric'),
+        ...document.querySelectorAll('.card-hover'),
+        ...document.querySelectorAll('header .container > *')
+      ];
+
+      // Initialize hidden state unless reduced motion
+      targets.forEach(el => {
+        if (!prefersReduced) {
+          el.classList.add('opacity-0');
+          observer.observe(el);
+        } else {
+          // show immediately without animation for reduced motion users
+          el.style.opacity = 1;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

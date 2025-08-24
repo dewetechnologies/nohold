@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In - NoHold Telkom</title>
+  <!-- Modern CSS approach with Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: '#f59e0b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.5s ease-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(10px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style type="text/css">
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    }
+    .hero-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .form-input {
+      @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition;
+    }
+    .password-toggle {
+      @apply absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer;
+    }
+    .divider {
+      @apply relative flex items-center;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      @apply flex-1 border-t border-gray-300;
+    }
+  </style>
+</head>
+<body class="font-sans bg-gray-50 antialiased min-h-screen flex flex-col">
+  <%- include('partials/navbar') %>
+
+  <div class="site-content flex-grow">
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-16 text-center relative overflow-hidden" style="background-image: url('https://img.freepik.com/free-vector/blank-blue-halftone-background_53876-114466.jpg'); background-size: cover; background-position: center;">
+      <div class="absolute inset-0 bg-black opacity-10"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-slide-up">Welcome Back</h1>
+        <p class="text-xl max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
+          Sign in to access your account and manage your support requests
+        </p>
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 h-16 bg-white transform skew-y-2 translate-y-8 z-20"></div>
+    </section>
+
+    <!-- Sign In Form Section -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="max-w-md mx-auto">
+          <div class="bg-gray-50 rounded-2xl p-8 md:p-10 shadow-sm">
+            <form action="/signin" method="POST" class="space-y-6">
+              <div>
+                <label for="identifier" class="block text-sm font-medium text-gray-700 mb-2">
+                  Email or Phone <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input required type="text" id="identifier" name="identifier" class="form-input" placeholder="you@example.com or 0812345678" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <i class="fa-solid fa-user text-gray-400"></i>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                  Password <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input required type="password" id="password" name="password" class="form-input pr-10" placeholder="Enter your password" />
+                  <div class="password-toggle" id="passwordToggle">
+                    <i class="fa-solid fa-eye text-gray-400"></i>
+                  </div>
+                </div>
+                <div class="mt-2 text-right">
+                  <a href="/forgot-password" class="text-sm text-primary-600 hover:text-primary-500">Forgot password?</a>
+                </div>
+              </div>
+
+              <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center">
+                <i class="fa-solid fa-right-to-bracket mr-2"></i> Sign In
+              </button>
+            </form>
+
+            <div class="divider my-8">
+              <span class="mx-4 text-sm text-gray-500 bg-gray-50 px-2">or continue with</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <a href="#" class="flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors">
+                <i class="fa-brands fa-google text-red-500 mr-2"></i>
+                <span class="text-sm font-medium">Google</span>
+              </a>
+              <a href="#" class="flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors">
+                <i class="fa-brands fa-facebook text-blue-600 mr-2"></i>
+                <span class="text-sm font-medium">Facebook</span>
+              </a>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-gray-200">
+              <p class="text-center text-sm text-gray-600">Don't have an account? <a href="/signup" class="font-medium text-primary-600 hover:text-primary-500">Sign up here</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Your Account Benefits</h2>
+        <p class="text-xl text-center text-gray-600 max-w-3xl mx-auto mb-12">Access these features when you sign in to your NoHold Telkom account</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div class="text-center p-6 bg-white rounded-2xl shadow-sm">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl text-2xl mb-4">
+              <i class="fa-solid fa-history"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Request History</h3>
+            <p class="text-gray-600">View your previous support requests and their status</p>
+          </div>
+          
+          <div class="text-center p-6 bg-white rounded-2xl shadow-sm">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl text-2xl mb-4">
+              <i class="fa-solid fa-bell"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Quick Callbacks</h3>
+            <p class="text-gray-600">Request callbacks faster with your saved information</p>
+          </div>
+          
+          <div class="text-center p-6 bg-white rounded-2xl shadow-sm">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl text-2xl mb-4">
+              <i class="fa-solid fa-user-circle"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Personalized Support</h3>
+            <p class="text-gray-600">Get tailored solutions based on your service history</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <%- include('partials/footer') %>
+  
+  <script>
+    // Add form enhancements
+    document.addEventListener('DOMContentLoaded', function() {
+      // Password visibility toggle
+      const passwordToggle = document.getElementById('passwordToggle');
+      const passwordInput = document.getElementById('password');
+      
+      if (passwordToggle && passwordInput) {
+        passwordToggle.addEventListener('click', function() {
+          if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordToggle.innerHTML = '<i class="fa-solid fa-eye-slash text-gray-400"></i>';
+          } else {
+            passwordInput.type = 'password';
+            passwordToggle.innerHTML = '<i class="fa-solid fa-eye text-gray-400"></i>';
+          }
+        });
+      }
+      
+      // Add animation to form elements
+      const formElements = document.querySelectorAll('input');
+      formElements.forEach((element, index) => {
+        element.classList.add('animate-fade-in');
+        element.style.animationDelay = `${index * 0.1}s`;
+      });
+      
+      // Add focus styles for better UX
+      const inputs = document.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+          this.parentElement.classList.add('ring-2', 'ring-primary-200', 'rounded-xl');
+        });
+        input.addEventListener('blur', function() {
+          this.parentElement.classList.remove('ring-2', 'ring-primary-200', 'rounded-xl');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

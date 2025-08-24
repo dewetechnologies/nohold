@@ -1,0 +1,33 @@
+<nav class="bg-blue-800 text-white py-4 sticky top-0 z-20 shadow-lg">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <div class="text-2xl font-bold">NoHold Telkom</div>
+      <div class="flex space-x-6 items-center">
+        <a href="/" class="hover:underline hidden md:block">Home</a>
+        <a href="/about" class="hover:underline hidden md:block">About</a>
+        <a href="/contact" class="hover:underline hidden md:block">Contact Us</a>
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/logout" class="bg-white text-blue-800 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 hidden md:inline-block">Logout</a>
+        <% } else { %>
+          <a href="/signin" id="signInBtn" class="bg-yellow-400 text-blue-800 px-4 py-2 rounded-full font-semibold hover:bg-yellow-500 hidden md:inline-block">Login</a>
+        <% } %>
+        <button id="mobileMenuBtn" class="md:hidden focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
+      <div id="mobileMenu" class="hidden md:hidden bg-blue-800 text-white absolute top-16 left-0 w-full shadow-lg">
+        <div class="flex flex-col items-center space-y-4 py-4">
+          <a href="/" class="hover:underline">Home</a>
+          <a href="/about" class="hover:underline">About</a>
+          <a href="/contact" class="hover:underline">Contact Us</a>
+          <% if (typeof user !== 'undefined' && user) { %>
+            <a href="/logout" class="hover:underline">Logout</a>
+          <% } else { %>
+            <a href="/signin" id="signInBtnMobile" class="hover:underline">Login</a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </nav>
+  

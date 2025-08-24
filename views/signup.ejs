@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - NoHold Telkom</title>
+  <!-- Modern CSS approach with Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: '#f59e0b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.5s ease-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(10px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style type="text/css">
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    }
+    .hero-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .form-input {
+      @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition;
+    }
+    .password-toggle {
+      @apply absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer;
+    }
+  </style>
+</head>
+<body class="font-sans bg-gray-50 antialiased min-h-screen flex flex-col">
+  <%- include('partials/navbar') %>
+
+  <div class="site-content flex-grow">
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-16 text-center relative overflow-hidden" style="background-image: url('https://img.freepik.com/free-vector/blank-blue-halftone-background_53876-114466.jpg'); background-size: cover; background-position: center;">
+      <div class="absolute inset-0 bg-black opacity-10"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-slide-up">Join NoHold Telkom</h1>
+        <p class="text-xl max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
+          Create your account to experience customer support without the wait
+        </p>
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 h-16 bg-white transform skew-y-2 translate-y-8 z-20"></div>
+    </section>
+
+    <!-- Sign Up Form Section -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto">
+          <div class="bg-gray-50 rounded-2xl p-8 md:p-10 shadow-sm">
+            <form action="/signup" method="POST" class="space-y-6">
+              <!-- Personal Information -->
+              <div>
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Personal Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
+                      First Name <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                      <input required type="text" id="firstName" name="firstName" class="form-input" placeholder="Enter your first name" />
+                      <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fa-solid fa-user text-gray-400"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">
+                      Surname <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                      <input required type="text" id="lastName" name="lastName" class="form-input" placeholder="Enter your surname" />
+                      <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fa-solid fa-user text-gray-400"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contact Information -->
+              <div>
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Contact Information</h2>
+                <div class="grid grid-cols-1 gap-6">
+                  <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                      <input required type="email" id="email" name="email" class="form-input" placeholder="you@example.com" />
+                      <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fa-solid fa-envelope text-gray-400"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                      <input required type="tel" id="phone" name="phone" pattern="[0-9+\-()\s]{7,}" class="form-input" placeholder="e.g. 0812345678" />
+                      <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fa-solid fa-phone text-gray-400"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Address Information -->
+              <div>
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Address Information</h2>
+                <div class="space-y-6">
+                  <div>
+                    <label for="address1" class="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
+                    <div class="relative">
+                      <input type="text" id="address1" name="address1" class="form-input" placeholder="Street name" />
+                      <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fa-solid fa-road text-gray-400"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label for="houseNumber" class="block text-sm font-medium text-gray-700 mb-2">House Number</label>
+                      <div class="relative">
+                        <input type="text" id="houseNumber" name="houseNumber" class="form-input" placeholder="e.g. 12B" />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <i class="fa-solid fa-hashtag text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label for="suburb" class="block text-sm font-medium text-gray-700 mb-2">Suburb</label>
+                      <div class="relative">
+                        <input type="text" id="suburb" name="suburb" class="form-input" placeholder="Suburb" />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <i class="fa-solid fa-location-dot text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label for="city" class="block text-sm font-medium text-gray-700 mb-2">Town / City</label>
+                      <div class="relative">
+                        <input type="text" id="city" name="city" class="form-input" placeholder="Town or City" />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <i class="fa-solid fa-city text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Security -->
+              <div>
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Security</h2>
+                <div>
+                  <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                    Password <span class="text-red-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <input required type="password" id="password" name="password" minlength="6" class="form-input pr-10" placeholder="Create a strong password" />
+                    <div class="password-toggle" id="passwordToggle">
+                      <i class="fa-solid fa-eye text-gray-400"></i>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-2">Must be at least 6 characters long</p>
+                </div>
+              </div>
+
+              <!-- Terms and Conditions -->
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <input id="terms" name="terms" type="checkbox" class="focus:ring-primary-500 h-4 w-4 text-primary-600 border-gray-300 rounded" required />
+                </div>
+                <div class="ml-3 text-sm">
+                  <label for="terms" class="font-medium text-gray-700">I agree to the <a href="#" class="text-primary-600 hover:text-primary-500">Terms and Conditions</a> and <a href="#" class="text-primary-600 hover:text-primary-500">Privacy Policy</a></label>
+                </div>
+              </div>
+
+              <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center">
+                <i class="fa-solid fa-user-plus mr-2"></i> Create Account
+              </button>
+            </form>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200">
+              <p class="text-center text-sm text-gray-600">Already have an account? <a href="/signin" class="font-medium text-primary-600 hover:text-primary-500">Sign in here</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Why Create an Account?</h2>
+        <p class="text-xl text-center text-gray-600 max-w-3xl mx-auto mb-12">Join thousands of South Africans enjoying better customer service</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div class="text-center p-6 bg-white rounded-2xl shadow-sm">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl text-2xl mb-4">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Faster Support</h3>
+            <p class="text-gray-600">Save your information for quicker callback requests and support</p>
+          </div>
+          
+          <div class="text-center p-6 bg-white rounded-2xl shadow-sm">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl text-2xl mb-4">
+              <i class="fa-solid fa-history"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Request History</h3>
+            <p class="text-gray-600">Track your previous requests and their resolution status</p>
+          </div>
+          
+          <div class="text-center p-6 bg-white rounded-2xl shadow-sm">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl text-2xl mb-4">
+              <i class="fa-solid fa-bell"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Personalized Alerts</h3>
+            <p class="text-gray-600">Get notified about service updates and promotions</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <%- include('partials/footer') %>
+  
+  <script>
+    // Add form enhancements
+    document.addEventListener('DOMContentLoaded', function() {
+      // Password visibility toggle
+      const passwordToggle = document.getElementById('passwordToggle');
+      const passwordInput = document.getElementById('password');
+      
+      if (passwordToggle && passwordInput) {
+        passwordToggle.addEventListener('click', function() {
+          if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordToggle.innerHTML = '<i class="fa-solid fa-eye-slash text-gray-400"></i>';
+          } else {
+            passwordInput.type = 'password';
+            passwordToggle.innerHTML = '<i class="fa-solid fa-eye text-gray-400"></i>';
+          }
+        });
+      }
+      
+      // Add animation to form elements
+      const formElements = document.querySelectorAll('input, select, textarea');
+      formElements.forEach((element, index) => {
+        element.classList.add('animate-fade-in');
+        element.style.animationDelay = `${index * 0.05}s`;
+      });
+      
+      // Form validation enhancements
+      const form = document.querySelector('form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          // You could add additional validation here
+          const terms = document.getElementById('terms');
+          if (terms && !terms.checked) {
+            e.preventDefault();
+            terms.focus();
+            // You could add a more prominent error message here
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

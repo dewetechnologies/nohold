@@ -1,0 +1,37 @@
+.modal {
+    display: none;
+    transition: opacity 0.3s ease;
+  }
+  .modal.show {
+    display: flex;
+    opacity: 1;
+  }
+  .feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  .success-metric {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+/* Sticky footer layout */
+html, body {
+  height: 100%;
+}
+.site-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.site-content {
+  flex: 1 0 auto;
+}
+.site-footer {
+  margin-top: auto;
+}

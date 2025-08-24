@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - NoHold Telkom</title>
+  <!-- Modern CSS approach with Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: '#f59e0b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.5s ease-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(10px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style type="text/css">
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    }
+    .hero-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .form-input {
+      @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition;
+    }
+    .form-select {
+      @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition appearance-none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1.5em 1.5em;
+    }
+    .form-textarea {
+      @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition;
+    }
+  </style>
+  <meta name="description" content="Contact NoHold Telkom support" />
+  <meta name="robots" content="noindex, nofollow" />
+</head>
+<body class="font-sans bg-gray-50 antialiased">
+  <%- include('partials/navbar') %>
+
+  <div class="site-content">
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20 text-center relative overflow-hidden" style="background-image: url('https://img.freepik.com/free-vector/blank-blue-halftone-background_53876-114466.jpg'); background-size: cover; background-position: center;">
+      <div class="absolute inset-0 bg-black opacity-10 pointer-events-none"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-slide-up">Contact Us</h1>
+        <p class="text-xl max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
+          Submit your support request and we'll get back to you at your preferred time
+        </p>
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 h-16 bg-white transform skew-y-2 translate-y-8 z-20 pointer-events-none"></div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+          <!-- Success Message -->
+          <% if (typeof success !== 'undefined' && success) { %>
+            <div class="mb-8 p-5 rounded-2xl bg-green-100 text-green-800 border border-green-200 flex items-start">
+              <div class="flex-shrink-0 mr-4">
+                <i class="fa-solid fa-circle-check text-green-600 text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg mb-1">Message Sent Successfully!</h3>
+                <p>Your message was sent. We'll contact you shortly at your preferred callback time.</p>
+              </div>
+            </div>
+          <% } %>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Contact Information -->
+            <div class="lg:col-span-1">
+              <div class="bg-primary-50 rounded-2xl p-8 h-full">
+                <h2 class="text-2xl font-semibold mb-6">Get In Touch</h2>
+                
+                <div class="space-y-6">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center mr-4">
+                      <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold mb-1">Call Us</h3>
+                      <p class="text-gray-600">10210 (Telkom to Telkom)</p>
+                      <p class="text-gray-600">081 180 (Other Networks)</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center mr-4">
+                      <i class="fa-solid fa-comment-sms"></i>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold mb-1">USSD</h3>
+                      <p class="text-gray-600">Dial *180# for self-service options</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center mr-4">
+                      <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold mb-1">WhatsApp</h3>
+                      <p class="text-gray-600">Message 061 505 5555 for assistance</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center mr-4">
+                      <i class="fa-solid fa-store"></i>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold mb-1">Stores</h3>
+                      <p class="text-gray-600">Find a Telkom store near you</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="lg:col-span-2">
+              <div class="bg-gray-50 rounded-2xl p-8">
+                <h2 class="text-2xl font-semibold mb-6">Send us a message</h2>
+                
+                <form action="/queries" method="POST" class="space-y-6">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2" for="firstName">
+                        First Name <span class="text-red-500">*</span>
+                      </label>
+                      <div class="relative">
+                        <input class="form-input" type="text" id="firstName" name="firstName" placeholder="John" required />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <i class="fa-solid fa-user text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2" for="lastName">
+                        Last Name <span class="text-red-500">*</span>
+                      </label>
+                      <div class="relative">
+                        <input class="form-input" type="text" id="lastName" name="lastName" placeholder="Doe" required />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <i class="fa-solid fa-user text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2" for="email">
+                        Email <span class="text-red-500">*</span>
+                      </label>
+                      <div class="relative">
+                        <input class="form-input" type="email" id="email" name="email" placeholder="john@example.com" required />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <i class="fa-solid fa-envelope text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2" for="phone">
+                        Phone <span class="text-red-500">*</span>
+                      </label>
+                      <div class="relative">
+                        <input class="form-input" type="tel" id="phone" name="phone" placeholder="0712345678" required />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <i class="fa-solid fa-phone text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="topic" class="block text-sm font-medium text-gray-700 mb-2">
+                      What can we help you with? <span class="text-red-500">*</span>
+                    </label>
+                    <!-- Keep select for form submission, hide it visually -->
+                    <select id="topic" name="topic" required class="form-select hidden">
+                      <option value="" disabled selected>Select an option</option>
+                      <optgroup label="Technical Issues">
+                        <option value="internet-slow">My internet/fibre is down or very slow</option>
+                        <option value="cant-call">I can't make or receive calls</option>
+                        <option value="data-disappears">My mobile data keeps disappearing too quickly</option>
+                        <option value="poor-coverage">I have poor network coverage in my area</option>
+                        <option value="line-not-working">My line is not working (landline, fibre, LTE)</option>
+                      </optgroup>
+                      <optgroup label="Billing & Accounts">
+                        <option value="overcharged">I was overcharged this month</option>
+                        <option value="query-bill">I want to query a bill or statement</option>
+                        <option value="how-to-pay">How do I pay my account?</option>
+                        <option value="payment-arrangement">Can I get an extension / payment arrangement?</option>
+                        <option value="service-suspended">Why was my service suspended?</option>
+                      </optgroup>
+                      <optgroup label="Services & Packages">
+                        <option value="upgrade-downgrade">I want to upgrade/downgrade my package</option>
+                        <option value="promotions-bundles">What promotions or bundles are available?</option>
+                        <option value="buy-data-airtime">How do I buy data/airtime?</option>
+                        <option value="cancel-service">Can I cancel a service or contract?</option>
+                        <option value="coverage-info">I need information about fibre or LTE coverage</option>
+                      </optgroup>
+                      <optgroup label="SIM & Mobile Issues">
+                        <option value="puk">My SIM is blocked / needs a PUK code</option>
+                        <option value="port-number">I want to port my number to Telkom</option>
+                        <option value="lost-phone">I lost my phone — how do I block my SIM?</option>
+                        <option value="recharge-failed">My prepaid recharge didn't go through</option>
+                      </optgroup>
+                      <optgroup label="General Support">
+                        <option value="login-portal">How do I log into the Telkom app or portal?</option>
+                        <option value="nearest-store">Where is the nearest Telkom store?</option>
+                        <option value="check-balance">How do I check my balance / data usage?</option>
+                        <option value="speak-agent">How can I speak directly to a human agent?</option>
+                      </optgroup>
+                    </select>
+
+                    <!-- Dynamic buttons will be injected here -->
+                    <div id="topicButtons" class="space-y-6"></div>
+                  </div>
+
+                  <div>
+                    <label for="details" class="block text-sm font-medium text-gray-700 mb-2">
+                      Additional details (optional)
+                    </label>
+                    <div class="relative">
+                      <textarea id="details" name="details" rows="5" class="form-textarea" placeholder="Add any details that can help us resolve your issue faster..."></textarea>
+                      <div class="absolute top-3 right-3 pointer-events-none">
+                        <i class="fa-solid fa-pen text-gray-400"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="w-full bg-primary-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> Send Message
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Frequently Asked Questions</h2>
+        <p class="text-xl text-center text-gray-600 max-w-3xl mx-auto mb-12">Quick answers to common questions</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <h3 class="text-lg font-semibold mb-2 flex items-center">
+              <i class="fa-solid fa-circle-question text-primary-600 mr-2"></i>
+              How soon will I get a callback?
+            </h3>
+            <p class="text-gray-600">We typically respond within 15-30 minutes during business hours (8AM-8PM). After hours requests will be handled the next business day.</p>
+          </div>
+          
+          <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <h3 class="text-lg font-semibold mb-2 flex items-center">
+              <i class="fa-solid fa-circle-question text-primary-600 mr-2"></i>
+              What information should I provide?
+            </h3>
+            <p class="text-gray-600">Please have your account number, phone number, and details about your issue ready. This helps us serve you faster.</p>
+          </div>
+          
+          <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <h3 class="text-lg font-semibold mb-2 flex items-center">
+              <i class="fa-solid fa-circle-question text-primary-600 mr-2"></i>
+              Can I request a specific callback time?
+            </h3>
+            <p class="text-gray-600">Yes! After submitting your request, you'll be able to select a convenient time for your callback.</p>
+          </div>
+          
+          <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <h3 class="text-lg font-semibold mb-2 flex items-center">
+              <i class="fa-solid fa-circle-question text-primary-600 mr-2"></i>
+              Is this service available nationwide?
+            </h3>
+            <p class="text-gray-600">Yes, NoHold Telkom serves customers across all provinces in South Africa.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <%- include('partials/call-cta') %>
+  <%- include('partials/footer') %>
+  
+  <script>
+    // Add form validation and enhancements
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add animation to form elements
+      const formElements = document.querySelectorAll('input, select, textarea');
+      formElements.forEach((element, index) => {
+        element.classList.add('animate-fade-in');
+        element.style.animationDelay = `${index * 0.05}s`;
+      });
+      
+      // Add character counter to textarea
+      const textarea = document.getElementById('details');
+      if (textarea) {
+        const charCounter = document.createElement('div');
+        charCounter.className = 'text-sm text-gray-500 mt-1 text-right';
+        charCounter.textContent = '0/500 characters';
+        textarea.parentNode.appendChild(charCounter);
+        
+        textarea.addEventListener('input', function() {
+          const length = this.value.length;
+          charCounter.textContent = `${length}/500 characters`;
+          if (length > 500) {
+            charCounter.classList.add('text-red-500');
+          } else {
+            charCounter.classList.remove('text-red-500');
+          }
+        });
+      }
+
+      // Build clickable topic buttons from the hidden select
+      const topicSelect = document.getElementById('topic');
+      const topicButtonsContainer = document.getElementById('topicButtons');
+      if (topicSelect && topicButtonsContainer) {
+        const setActive = (value) => {
+          // update select value
+          topicSelect.value = value;
+          // update button styles
+          topicButtonsContainer.querySelectorAll('[data-topic]')
+            .forEach(btn => {
+              if (btn.getAttribute('data-topic') === value) {
+                btn.classList.add('ring-2','ring-primary-500','border-primary-500','bg-primary-50','text-primary-700');
+              } else {
+                btn.classList.remove('ring-2','ring-primary-500','border-primary-500','bg-primary-50','text-primary-700');
+              }
+            });
+        };
+
+        // Iterate optgroups to render sections
+        Array.from(topicSelect.children).forEach(node => {
+          if (node.tagName === 'OPTGROUP') {
+            const group = node;
+            // Group title
+            const h3 = document.createElement('h3');
+            h3.className = 'text-sm font-semibold text-gray-700 mb-3 mt-6';
+            h3.textContent = group.label;
+            topicButtonsContainer.appendChild(h3);
+
+            // Grid for options
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3';
+
+            Array.from(group.children).forEach(opt => {
+              if (opt.tagName === 'OPTION') {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.setAttribute('data-topic', opt.value);
+                btn.className = 'w-full text-left px-4 py-3 border border-gray-300 rounded-xl hover:border-primary-400 hover:bg-primary-50 transition';
+                btn.textContent = opt.textContent;
+                btn.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  setActive(opt.value);
+                  // Redirect to dedicated sign-in page
+                  window.location.href = '/signin';
+                });
+                grid.appendChild(btn);
+              }
+            });
+
+            topicButtonsContainer.appendChild(grid);
+          }
+        });
+
+        // If a value already selected (server-side), reflect it; otherwise none selected
+        if (topicSelect.value && topicSelect.value !== '') {
+          setActive(topicSelect.value);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

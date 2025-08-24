@@ -90,8 +90,16 @@
     <section class="gradient-bg text-white py-12 text-center relative overflow-hidden" style="background-image: url('https://img.freepik.com/free-vector/blank-blue-halftone-background_53876-114466.jpg'); background-size: cover; background-position: center;">
       <div class="absolute inset-0 bg-black opacity-10 pointer-events-none"></div>
       <div class="container mx-auto px-4 relative z-10">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 animate-slide-up">Your Dashboard</h1>
-        <p class="text-xl max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
+        <div class="flex justify-end mb-4">
+          <label for="lang-select" class="sr-only">Language</label>
+          <select id="lang-select" class="text-gray-900 bg-white/90 rounded-lg px-3 py-2 text-sm">
+            <option value="en">English (EN)</option>
+            <option value="af">Afrikaans (AF)</option>
+            <option value="zu">isiZulu (ZU)</option>
+          </select>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 animate-slide-up" data-i18n="dashboard.title">Your Dashboard</h1>
+        <p class="text-xl max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s" data-i18n="dashboard.subtitle">
           Manage your support requests and account information
         </p>
       </div>
@@ -107,8 +115,8 @@
               <i class="fa-solid fa-circle-check text-green-600 text-xl"></i>
             </div>
             <div>
-              <h3 class="font-semibold mb-1">Query Submitted Successfully!</h3>
-              <p>Your query was submitted. We'll get back to you shortly.</p>
+              <h3 class="font-semibold mb-1" data-i18n="success.title">Query Submitted Successfully!</h3>
+              <p data-i18n="success.body">Your query was submitted. We'll get back to you shortly.</p>
             </div>
           </div>
         </div>
@@ -122,7 +130,7 @@
           <!-- User Info Card -->
           <div class="bg-white rounded-2xl shadow-md p-6 lg:col-span-1 card-hover">
             <h2 class="text-xl font-semibold mb-6 pb-3 border-b text-gray-800 flex items-center">
-              <i class="fa-solid fa-user-circle mr-2 text-primary-600"></i> Your Information
+              <i class="fa-solid fa-user-circle mr-2 text-primary-600"></i> <span data-i18n="user.info">Your Information</span>
             </h2>
             <% if (user) { %>
               <div class="space-y-4">
@@ -131,7 +139,7 @@
                     <i class="fa-solid fa-id-card"></i>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500">Name</p>
+                    <p class="text-sm text-gray-500" data-i18n="label.name">Name</p>
                     <p class="font-medium text-gray-800"><%= user.firstName %> <%= user.lastName %></p>
                   </div>
                 </div>
@@ -141,7 +149,7 @@
                     <i class="fa-solid fa-envelope"></i>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500">Email</p>
+                    <p class="text-sm text-gray-500" data-i18n="label.email">Email</p>
                     <p class="font-medium text-gray-800"><%= user.email %></p>
                   </div>
                 </div>
@@ -151,7 +159,7 @@
                     <i class="fa-solid fa-phone"></i>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500">Phone</p>
+                    <p class="text-sm text-gray-500" data-i18n="label.phone">Phone</p>
                     <p class="font-medium text-gray-800"><%= user.phone %></p>
                   </div>
                 </div>
@@ -161,7 +169,7 @@
               <div class="mt-8 pt-6 border-t border-gray-200">
                 <% if (!(houses && houses.length)) { %>
                   <h3 class="text-lg font-semibold mb-4 flex items-center">
-                    <i class="fa-solid fa-house mr-2 text-primary-600"></i> Add Your Address
+                    <i class="fa-solid fa-house mr-2 text-primary-600"></i> <span data-i18n="address.addTitle">Add Your Address</span>
                   </h3>
                   <form action="/houses" method="POST" enctype="multipart/form-data" class="space-y-4">
                     <input type="hidden" name="userId" value="<%= userId || '' %>">
@@ -171,34 +179,34 @@
                     <input type="hidden" name="phone" value="<%= user.phone %>">
 
                     <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2" for="address1">Street Address</label>
+                      <label class="block text-sm font-medium text-gray-700 mb-2" for="address1" data-i18n="address.street">Street Address</label>
                       <input class="form-input" type="text" id="address1" name="address1" placeholder="Street name" />
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2" for="houseNumber">House No.</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="houseNumber" data-i18n="address.houseNo">House No.</label>
                         <input class="form-input" type="text" id="houseNumber" name="houseNumber" placeholder="e.g. 12B" />
                       </div>
                       <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2" for="suburb">Suburb</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="suburb" data-i18n="address.suburb">Suburb</label>
                         <input class="form-input" type="text" id="suburb" name="suburb" placeholder="Suburb" />
                       </div>
                       <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2" for="city">City</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="city" data-i18n="address.city">City</label>
                         <input class="form-input" type="text" id="city" name="city" placeholder="Town or City" />
                       </div>
                     </div>
                     <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2" for="image">House Picture</label>
+                      <label class="block text-sm font-medium text-gray-700 mb-2" for="image" data-i18n="address.housePic">House Picture</label>
                       <div class="flex items-center justify-center px-6 py-3 border-2 border-dashed border-gray-300 rounded-xl">
                         <div class="space-y-1 text-center">
                           <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-2xl mx-auto"></i>
                           <div class="flex text-sm text-gray-600">
                             <label for="image" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none">
-                              <span>Upload a file</span>
+                              <span data-i18n="upload.uploadFile">Upload a file</span>
                               <input id="image" name="image" type="file" class="sr-only" accept="image/*" />
                             </label>
-                            <p class="pl-1">or drag and drop</p>
+                            <p class="pl-1" data-i18n="upload.orDrag">or drag and drop</p>
                           </div>
                           <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                         </div>
@@ -210,11 +218,11 @@
                   </form>
                 <% } else { %>
                   <h3 class="text-lg font-semibold mb-4 flex items-center">
-                    <i class="fa-solid fa-house mr-2 text-primary-600"></i> Your Address
+                    <i class="fa-solid fa-house mr-2 text-primary-600"></i> <span data-i18n="address.yourTitle">Your Address</span>
                   </h3>
                   <div class="p-4 border rounded-xl bg-gray-50">
                     <% const firstHouse = houses[0]; %>
-                    <div class="text-sm text-gray-600 mb-1">Saved address</div>
+                    <div class="text-sm text-gray-600 mb-1" data-i18n="address.saved">Saved address</div>
                     <div class="font-medium text-gray-800"><%= firstHouse.houseNumber %> <%= firstHouse.address1 %>, <%= firstHouse.suburb %>, <%= firstHouse.city %></div>
                     <% if (firstHouse.imagePath) { %>
                       <img src="<%= firstHouse.imagePath %>" alt="House image" class="w-full h-40 object-cover rounded-xl mt-3 shadow-sm" />
@@ -235,41 +243,41 @@
                       <% } %>
 
                       <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2" for="image-update">Update House Picture</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="image-update" data-i18n="address.updatePic">Update House Picture</label>
                         <div class="flex items-center justify-center px-6 py-3 border-2 border-dashed border-gray-300 rounded-xl">
                           <div class="space-y-1 text-center">
                             <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-2xl mx-auto"></i>
                             <div class="flex text-sm text-gray-600">
                               <label for="image-update" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none">
-                                <span>Choose a new file</span>
+                                <span data-i18n="upload.chooseNew">Choose a new file</span>
                                 <input id="image-update" name="image" type="file" class="sr-only" accept="image/*" />
                               </label>
-                              <p class="pl-1">or drag and drop</p>
+                              <p class="pl-1" data-i18n="upload.orDrag">or drag and drop</p>
                             </div>
                             <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
                           </div>
                         </div>
                       </div>
                       <button type="submit" class="mt-3 w-full bg-primary-600 text-white py-2.5 rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center">
-                        <i class="fa-solid fa-rotate mr-2"></i> Update Picture
+                        <i class="fa-solid fa-rotate mr-2"></i> <span data-i18n="address.updateBtn">Update Picture</span>
                       </button>
                     </form>
 
                     <a href="#your-queries" class="mt-3 inline-flex items-center text-primary-600 hover:text-primary-500 text-sm font-medium">
-                      View your queries <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                      <span data-i18n="queries.view">View your queries</span> <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                     </a>
                   </div>
                 <% } %>
               </div>
             <% } else { %>
-              <p class="text-gray-600">No user info found. Please <a class="text-primary-600 underline" href="/signin">sign in</a>.</p>
+              <p class="text-gray-600"><span data-i18n="user.noInfo">No user info found.</span> <a class="text-primary-600 underline" href="/signin" data-i18n="user.signIn">Please sign in</a>.</p>
             <% } %>
           </div>
 
           <!-- Submit Query Card -->
           <div class="bg-white rounded-2xl shadow-md p-6 lg:col-span-2 card-hover">
             <h2 class="text-xl font-semibold mb-6 pb-3 border-b text-gray-800 flex items-center">
-              <i class="fa-solid fa-headset mr-2 text-primary-600"></i> Request Support
+              <i class="fa-solid fa-headset mr-2 text-primary-600"></i> <span data-i18n="support.title">Request Support</span>
             </h2>
             <form action="/queries" method="POST" class="space-y-6">
               <!-- include user identifiers so we can associate the query (temporary) -->
@@ -282,11 +290,11 @@
               <% } %>
 
               <div>
-                <label for="topic" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="topic" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="support.helpWith">
                   What can we help you with? <span class="text-red-500">*</span>
                 </label>
                 <select id="topic" name="topic" required class="form-select">
-                  <option value="" disabled selected>Select an option</option>
+                  <option value="" disabled selected data-i18n="support.selectOption">Select an option</option>
                   <optgroup label="Technical Issues">
                     <option value="internet-slow">My internet/fibre is down or very slow</option>
                     <option value="cant-call">I can't make or receive calls</option>
@@ -329,14 +337,14 @@
               </div>
 
               <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center">
-                <i class="fa-solid fa-paper-plane mr-2"></i> Submit Query
+                <i class="fa-solid fa-paper-plane mr-2"></i> <span data-i18n="support.submit">Submit Query</span>
               </button>
             </form>
 
             <!-- Previous Queries List -->
             <div class="mt-8 border rounded-xl p-5 bg-gray-50">
               <h3 class="text-lg font-semibold mb-4 flex items-center">
-                <i class="fa-solid fa-history mr-2 text-primary-600"></i> Recent Queries
+                <i class="fa-solid fa-history mr-2 text-primary-600"></i> <span data-i18n="queries.recent">Recent Queries</span>
               </h3>
               <% if (queries && queries.length) { %>
                 <ul class="space-y-4">
@@ -352,11 +360,11 @@
                 </ul>
                 <% if (queries.length > 3) { %>
                   <a href="#your-queries" class="mt-4 inline-flex items-center text-primary-600 hover:text-primary-500 text-sm font-medium">
-                    View all queries <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                    <span data-i18n="queries.viewAll">View all queries</span> <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                   </a>
                 <% } %>
               <% } else { %>
-                <p class="text-gray-600 text-center py-4">No queries yet.</p>
+                <p class="text-gray-600 text-center py-4" data-i18n="queries.none">No queries yet.</p>
               <% } %>
             </div>
           </div>
@@ -366,7 +374,7 @@
         <% if (user) { %>
         <section id="your-queries" class="mt-12 bg-white rounded-2xl shadow-md p-6 card-hover">
           <h2 class="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
-            <i class="fa-solid fa-list-check mr-2 text-primary-600"></i> Your Support Requests
+            <i class="fa-solid fa-list-check mr-2 text-primary-600"></i> <span data-i18n="yourRequests.title">Your Support Requests</span>
           </h2>
           <div class="border rounded-xl p-5 bg-gray-50">
             <% if (queries && queries.length) { %>
@@ -379,7 +387,8 @@
                         <div class="flex items-center justify-between mb-2">
                           <div class="text-xs text-gray-500"><%= new Date(q.createdAt).toLocaleString() %></div>
                           <span class="status-badge <%= isCompleted ? 'bg-green-100 text-green-800 border-green-200' : 'bg-orange-100 text-orange-800 border-orange-200' %>">
-                            <%= isCompleted ? 'Completed' : 'In Progress' %>
+                            <span data-i18n="status.completed" class="<%= isCompleted ? '' : 'hidden' %>">Completed</span>
+                            <span data-i18n="status.inProgress" class="<%= isCompleted ? 'hidden' : '' %>">In Progress</span>
                           </span>
                         </div>
                         <div class="font-semibold text-lg text-gray-900 mb-2"><%= q.topic %></div>
@@ -390,20 +399,20 @@
                         <div class="flex flex-wrap gap-2 mb-4">
                           <% if (!isCompleted) { %>
                             <span class="inline-flex items-center text-xs text-orange-800 bg-orange-50 border border-orange-200 rounded-full px-2 py-1">
-                              <i class="fa-solid fa-clock mr-1"></i> Waiting for agent call
+                              <i class="fa-solid fa-clock mr-1"></i> <span data-i18n="status.waitingCall">Waiting for agent call</span>
                             </span>
                           <% } %>
                           <% if (typeof q.etaMinutes !== 'undefined' && q.etaMinutes !== null) { %>
                             <span class="inline-flex items-center text-xs text-blue-800 bg-blue-50 border border-blue-200 rounded-full px-2 py-1">
-                              <i class="fa-solid fa-stopwatch mr-1"></i> ETA: <%= q.etaMinutes %> min
-                            </span>
+                             <i class="fa-solid fa-stopwatch mr-1"></i> <span data-i18n="status.etaPrefix">ETA:</span> <%= q.etaMinutes %> <span data-i18n="status.etaMin">min</span>
+                           </span>
                           <% } %>
                         </div>
                         
                         <div class="mt-4">
                           <% if (typeof q.rating !== 'undefined' && q.rating !== null) { %>
                             <div class="flex items-center space-x-2">
-                              <span class="text-sm text-gray-700">Your rating:</span>
+                              <span class="text-sm text-gray-700" data-i18n="rating.your">Your rating:</span>
                               <span class="text-yellow-500 text-base">
                                 <% for (var i = 1; i <= 5; i++) { %>
                                   <%= i <= q.rating ? '★' : '☆' %>
@@ -413,7 +422,7 @@
                             </div>
                           <% } else { %>
                             <form action="/queries/<%= q._id %>/rate" method="POST" class="rating-form flex items-center space-x-2">
-                              <span class="text-sm text-gray-700 mr-1">Rate this support:</span>
+                              <span class="text-sm text-gray-700 mr-1" data-i18n="rating.rateThis">Rate this support:</span>
                               <div class="flex items-center">
                                 <% for (var i = 1; i <= 5; i++) { %>
                                   <button type="submit" name="rating" value="<%= i %>" data-value="<%= i %>" aria-label="Rate <%= i %> stars"
@@ -434,8 +443,8 @@
             <% } else { %>
               <div class="text-center py-8">
                 <i class="fa-solid fa-inbox text-gray-300 text-4xl mb-4"></i>
-                <p class="text-gray-600">No support requests yet.</p>
-                <p class="text-sm text-gray-500 mt-1">Submit your first query using the form above.</p>
+                <p class="text-gray-600" data-i18n="empty.noRequests">No support requests yet.</p>
+                <p class="text-sm text-gray-500 mt-1" data-i18n="empty.submitFirst">Submit your first query using the form above.</p>
               </div>
             <% } %>
           </div>
@@ -445,9 +454,166 @@
     </section>
   </div>
 
-  <%- include('partials/call-cta') %>
   <%- include('partials/footer') %>
   
+  <script>
+    // Lightweight i18n for EN (English), AF (Afrikaans), ZU (isiZulu)
+    (function() {
+      const translations = {
+        en: {
+          'dashboard.title': 'Your Dashboard',
+          'dashboard.subtitle': 'Manage your support requests and account information',
+          'user.info': 'Your Information',
+          'user.noInfo': 'No user info found.',
+          'user.signIn': 'Please sign in',
+          'label.name': 'Name',
+          'label.email': 'Email',
+          'label.phone': 'Phone',
+          'address.addTitle': 'Add Your Address',
+          'address.street': 'Street Address',
+          'address.houseNo': 'House No.',
+          'address.suburb': 'Suburb',
+          'address.city': 'City',
+          'address.housePic': 'House Picture',
+          'address.save': 'Save Address',
+          'address.yourTitle': 'Your Address',
+          'address.saved': 'Saved address',
+          'address.updatePic': 'Update House Picture',
+          'address.updateBtn': 'Update Picture',
+          'upload.uploadFile': 'Upload a file',
+          'upload.orDrag': 'or drag and drop',
+          'upload.chooseNew': 'Choose a new file',
+          'support.title': 'Request Support',
+          'support.helpWith': 'What can we help you with? *',
+          'support.selectOption': 'Select an option',
+          'support.submit': 'Submit Query',
+          'queries.recent': 'Recent Queries',
+          'queries.none': 'No queries yet.',
+          'queries.view': 'View your queries',
+          'yourRequests.title': 'Your Support Requests',
+          'status.completed': 'Completed',
+          'status.inProgress': 'In Progress',
+          'status.waitingCall': 'Waiting for agent call',
+          'status.etaPrefix': 'ETA:',
+          'status.etaMin': 'min',
+          'success.title': 'Query Submitted Successfully!',
+          'success.body': "Your query was submitted. We'll get back to you shortly.",
+          'empty.noRequests': 'No support requests yet.',
+          'empty.submitFirst': 'Submit your first query using the form above.'
+        },
+        af: {
+          'dashboard.title': 'Jou Paneelbord',
+          'dashboard.subtitle': 'Bestuur jou ondersteuningsversoeke en rekeninginligting',
+          'user.info': 'Jou Inligting',
+          'user.noInfo': 'Geen gebruiker-inligting gevind nie.',
+          'user.signIn': 'Meld asseblief aan',
+          'label.name': 'Naam',
+          'label.email': 'E-pos',
+          'label.phone': 'Foon',
+          'address.addTitle': 'Voeg Jou Adres By',
+          'address.street': 'Straatadres',
+          'address.houseNo': 'Huisnr.',
+          'address.suburb': 'Voorstad',
+          'address.city': 'Stad',
+          'address.housePic': 'Huisfoto',
+          'address.save': 'Stoor Adres',
+          'address.yourTitle': 'Jou Adres',
+          'address.saved': 'Gestoorde adres',
+          'address.updatePic': 'Werk Huisfoto By',
+          'address.updateBtn': 'Werk Foto By',
+          'upload.uploadFile': 'Laai ’n lêer op',
+          'upload.orDrag': 'of sleep en los',
+          'upload.chooseNew': 'Kies ’n nuwe lêer',
+          'support.title': 'Versoek Ondersteuning',
+          'support.helpWith': 'Waarmee kan ons help? *',
+          'support.selectOption': 'Kies ’n opsie',
+          'support.submit': 'Dien Versoek In',
+          'queries.recent': 'Onlangse Versoeke',
+          'queries.none': 'Geen versoeke nog nie.',
+          'queries.view': 'Sien jou versoeke',
+          'yourRequests.title': 'Jou Ondersteuningsversoeke',
+          'status.completed': 'Afgehandel',
+          'status.inProgress': 'In proses',
+          'status.waitingCall': 'Wag vir agent-oproep',
+          'status.etaPrefix': 'ETA:',
+          'status.etaMin': 'min',
+          'success.title': 'Versoek suksesvol ingedien!',
+          'success.body': 'Jou versoek is ingedien. Ons sal gou terugkom na jou.',
+          'empty.noRequests': 'Geen ondersteuningsversoeke nog nie.',
+          'empty.submitFirst': 'Dien jou eerste versoek in met die vorm hierbo.'
+        },
+        zu: {
+          'dashboard.title': 'Iphaneli Yakho',
+          'dashboard.subtitle': 'Phatha izicelo zakho zosizo nolwazi lwe-akhawunti',
+          'user.info': 'Ulwazi Lwakho',
+          'user.noInfo': 'Alukho ulwazi lomsebenzisi olutholiwe.',
+          'user.signIn': 'Sicela ungene ngemvume',
+          'label.name': 'Igama',
+          'label.email': 'I-imeyili',
+          'label.phone': 'Ucingo',
+          'address.addTitle': 'Nezela Ikheli Lakho',
+          'address.street': 'Ikheli lomgwaqo',
+          'address.houseNo': 'Inombolo yendlu',
+          'address.suburb': 'Isifunda',
+          'address.city': 'Idolobha',
+          'address.housePic': 'Isithombe sendlu',
+          'address.save': 'Londoloza Ikheli',
+          'address.yourTitle': 'Ikheli Lakho',
+          'address.saved': 'Ikheli eligciniwe',
+          'address.updatePic': 'Buyekeza Isithombe Sendlu',
+          'address.updateBtn': 'Buyekeza Isithombe',
+          'upload.uploadFile': 'Layisha ifayela',
+          'upload.orDrag': 'noma hudula ulahle',
+          'upload.chooseNew': 'Khetha ifayela elisha',
+          'support.title': 'Cela Usizo',
+          'support.helpWith': 'Singakusiza ngani? *',
+          'support.selectOption': 'Khetha inketho',
+          'support.submit': 'Thumela Isicelo',
+          'queries.recent': 'Izicelo Zakamuva',
+          'queries.none': 'Azikho izicelo okwamanje.',
+          'queries.view': 'Bheka izicelo zakho',
+          'yourRequests.title': 'Izicelo Zokwesekwa Zakho',
+          'status.completed': 'Seqediwe',
+          'status.inProgress': 'Kusaqhubeka',
+          'status.waitingCall': 'Kulindwe ucingo lwe-ejenti',
+          'status.etaPrefix': 'ETA:',
+          'status.etaMin': 'imin',
+          'success.title': 'Isicelo sithunyelwe ngempumelelo!',
+          'success.body': 'Isicelo sakho sithunyelwe. Sizobuyela kuwe maduze.',
+          'empty.noRequests': 'Azikho izicelo zokwesekwa okwamanje.',
+          'empty.submitFirst': 'Thumela isicelo sakho sokuqala usebenzisa ifomu engenhla.'
+        }
+      };
+
+      function applyI18n(lang) {
+        const dict = translations[lang] || translations.en;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          const text = (dict && dict[key]) || (translations.en && translations.en[key]);
+          if (text) el.textContent = text;
+        });
+        const html = document.documentElement;
+        if (html) html.setAttribute('lang', lang);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const select = document.getElementById('lang-select');
+        const saved = localStorage.getItem('nh_lang') || 'en';
+        if (select) select.value = saved;
+        applyI18n(saved);
+        if (select) {
+          select.addEventListener('change', (e) => {
+            const lang = e.target.value || 'en';
+            localStorage.setItem('nh_lang', lang);
+            applyI18n(lang);
+          });
+        }
+      });
+    })();
+  </script>
+
+  <%- include('partials/call-cta') %>
+
   <script>
     // Add form enhancements
     document.addEventListener('DOMContentLoaded', function() {

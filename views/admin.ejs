@@ -12,6 +12,61 @@
 
   <div class="site-content">
     <main class="container mx-auto px-4 py-10">
+      <% if (typeof stats !== 'undefined') { %>
+      <section class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-sm text-gray-500">Total Queries</div>
+          <div class="mt-1 text-3xl font-bold text-gray-900"><%= stats.total %></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-sm text-gray-500">Waiting</div>
+          <div class="mt-1 text-3xl font-bold text-orange-600"><%= stats.waiting %></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-sm text-gray-500">Completed</div>
+          <div class="mt-1 text-3xl font-bold text-green-600"><%= stats.completed %></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-sm text-gray-500">Avg ETA (min)</div>
+          <div class="mt-1 text-3xl font-bold text-blue-700"><%= (stats.avgEta === null ? '—' : stats.avgEta) %></div>
+        </div>
+      </section>
+
+      <section class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-lg font-semibold text-gray-800">Ratings</h2>
+            <div class="text-sm text-gray-500">(<%= stats.ratedCount %> ratings)</div>
+          </div>
+          <div class="text-yellow-500 text-2xl">
+            <% if (stats.avgRating) { %>
+              <% for (var i = 1; i <= 5; i++) { %>
+                <%= i <= Math.round(stats.avgRating) ? '★' : '☆' %>
+              <% } %>
+              <span class="text-sm text-gray-600 align-middle ml-2">Avg: <%= stats.avgRating.toFixed(2) %>/5</span>
+            <% } else { %>
+              <span class="text-sm text-gray-600">No ratings yet</span>
+            <% } %>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <h2 class="text-lg font-semibold text-gray-800 mb-2">Last 7 Days</h2>
+          <% if (typeof series7d !== 'undefined' && series7d && series7d.length) { %>
+            <ul class="text-sm text-gray-700 grid grid-cols-7 gap-2">
+              <% series7d.forEach(function(p){ %>
+                <li class="text-center">
+                  <div class="font-semibold"><%= p.count %></div>
+                  <div class="text-[11px] text-gray-500"><%= p.date.slice(5).replace('-', '/') %></div>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <div class="text-sm text-gray-600">No recent data</div>
+          <% } %>
+        </div>
+      </section>
+      <% } %>
+
       <section class="bg-white shadow-md rounded-lg p-6">
         <h1 class="text-2xl font-semibold mb-4">Queries</h1>
         <% if (queries && queries.length) { %>

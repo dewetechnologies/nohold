@@ -1,5 +1,5 @@
 <!-- Floating Call Button (opens NoHold modal) -->
-<button type="button" aria-label="Call Support" class="fixed bottom-5 right-5 z-40 w-14 h-14 md:w-16 md:h-16 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-lg flex items-center justify-center ring-2 ring-white focus:outline-none focus:ring-4 focus:ring-green-300 transition" onclick="(function(){ var m=document.getElementById('nohold-modal'); if(m){ m.classList.remove('hidden'); setTimeout(function(){ m.classList.remove('opacity-0'); }, 10); } })()">
+<button type="button" aria-label="Call Support" class="fixed bottom-5 right-5 z-40 w-14 h-14 md:w-16 md:h-16 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-lg flex items-center justify-center ring-2 ring-white focus:outline-none focus:ring-4 focus:ring-green-300 transition" onclick="(function(){ var m=document.getElementById('nohold-modal'); if(m){ m.classList.remove('hidden'); setTimeout(function(){ m.classList.remove('opacity-0'); }, 10); } if (window.__noholdInitSocket){ window.__noholdInitSocket(); } })()">
   <span class="sr-only">Call Support</span>
   <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
     <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h2.28a1 1 0 01.948.684l1.02 3.06a1 1 0 01-.272 1.07l-1.2 1.2a16 16 0 006.36 6.36l1.2-1.2a1 1 0 011.07-.272l3.06 1.02A1 1 0 0121 17.72V20a2 2 0 01-2 2h-1C9.82 22 2 14.18 2 5v0a2 2 0 011-1.732V3z" />
@@ -42,6 +42,7 @@
     if (!window.__noholdInit) {
       window.__noholdInit = true;
       var socket;
+      var didInit = false;
       function ensureSocket(){
         if (!socket) {
           // connect to same-origin Socket.IO
@@ -53,8 +54,35 @@
           socket.on('nohold:typing', function(state){
             toggleTyping(state === true);
           });
+          socket.on('nohold:options', function(payload){
+            // payload: { items: [{n, id, topic, createdAt}], prompt }
+            if (payload && Array.isArray(payload.items) && payload.items.length){
+              var chat = document.getElementById('nohold-chat');
+              if (!chat) return;
+              var html = '<div class="text-sm text-gray-800">'+escapeHtml(payload.prompt || 'Please choose a query by number:')+'</div><ol class="list-decimal pl-5 mt-2 space-y-1">';
+              payload.items.forEach(function(it){
+                var when = new Date(it.createdAt).toLocaleString();
+                html += '<li><span class="font-medium">'+it.n+'.</span> '+escapeHtml(it.topic || 'No topic')+' <span class="text-xs text-gray-500">('+when+')</span></li>';
+              });
+              html += '</ol>';
+              var row = document.createElement('div');
+              row.className = 'flex items-start space-x-2';
+              row.innerHTML = '<div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">N</div>'+
+                              '<div class="bg-white border rounded-lg px-3 py-2 text-sm shadow-sm">'+html+'</div>';
+              chat.appendChild(row);
+              chat.scrollTop = chat.scrollHeight;
+            }
+          });
         }
+        return socket;
       }
+      function initWithUser(){
+        try{
+          var uid = (window.NO_HOLD_USER_ID || '').trim();
+          if (uid && !didInit){ didInit = true; ensureSocket().emit('nohold:init', { userId: uid }); }
+        }catch(e){}
+      }
+      window.__noholdInitSocket = initWithUser;
 
       function addBotMessage(text){
         var chat = document.getElementById('nohold-chat');
@@ -105,8 +133,10 @@
         if (!val) return;
         addUserMessage(val);
         input.value = '';
+        var uid = (window.NO_HOLD_USER_ID || '').trim();
         ensureSocket();
-        socket.emit('nohold:message', { text: val });
+        if (!didInit) initWithUser();
+        socket.emit('nohold:message', { text: val, userId: uid });
       }
 
       document.addEventListener('click', function(e){

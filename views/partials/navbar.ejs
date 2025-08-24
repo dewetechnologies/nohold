@@ -30,4 +30,21 @@
       </div>
     </div>
   </nav>
-  
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var btn = document.getElementById('mobileMenuBtn');
+      var menu = document.getElementById('mobileMenu');
+      if (!btn || !menu) return;
+
+      btn.addEventListener('click', function () {
+        menu.classList.toggle('hidden');
+      });
+
+      // Close menu when a link is clicked
+      menu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          menu.classList.add('hidden');
+        });
+      });
+    });
+  </script>

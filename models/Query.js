@@ -9,6 +9,9 @@ const querySchema = new mongoose.Schema(
     phone: { type: String, trim: true },
     topic: { type: String, trim: true },
     details: { type: String, trim: true },
+    // Assignment
+    serviceProviderId: { type: mongoose.Schema.Types.ObjectId, ref: 'ServiceProvider', index: true },
+    departmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Department', index: true },
     // Status of the query: 'waiting' or 'completed'
     status: { type: String, enum: ['waiting', 'completed'], default: 'waiting', index: true },
     // Estimated time to resolution in minutes (optional)

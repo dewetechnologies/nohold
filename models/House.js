@@ -7,7 +7,9 @@ const houseSchema = new mongoose.Schema(
     houseNumber: { type: String, trim: true, default: '' },
     suburb: { type: String, trim: true, default: '' },
     city: { type: String, trim: true, default: '' },
-    imagePath: { type: String, trim: true, default: '' }, // relative path under /public
+    imagePath: { type: String, trim: true, default: '' }, // URL or internal route
+    image: { type: Buffer, select: false },
+    imageContentType: { type: String, trim: true, default: '' },
   },
   { timestamps: true }
 );

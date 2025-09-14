@@ -116,6 +116,30 @@
                 </div>
               </div>
 
+              <!-- Service Provider Selection -->
+              <div>
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Service Provider</h2>
+                <div>
+                  <label for="serviceProviderId" class="block text-sm font-medium text-gray-700 mb-2">
+                    Choose your provider
+                  </label>
+                  <div class="relative">
+                    <select id="serviceProviderId" name="serviceProviderId" class="form-input">
+                      <option value="">-- Select a provider (optional) --</option>
+                      <% if (typeof providers !== 'undefined' && providers && providers.length) { %>
+                        <% providers.forEach(function(p){ %>
+                          <option value="<%= p._id %>"><%= p.name %></option>
+                        <% }) %>
+                      <% } %>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <i class="fa-solid fa-building text-gray-400"></i>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-2">This list is managed by the Super Admin in /admin/admin.</p>
+                </div>
+              </div>
+
               <!-- Contact Information -->
               <div>
                 <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Contact Information</h2>

@@ -12,6 +12,47 @@
 
   <div class="site-content">
     <main class="container mx-auto px-4 py-10">
+      <% if (typeof providers !== 'undefined') { %>
+      <section class="mb-10 bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h1 class="text-2xl font-semibold">Service Providers</h1>
+        </div>
+        <form action="/admin/service-providers" method="POST" class="mb-6 flex gap-3">
+          <input type="text" name="name" placeholder="Add new provider (e.g. Telco Support)" class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" required />
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700">Add</button>
+        </form>
+        <% if (providers && providers.length) { %>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left text-sm">
+              <thead>
+                <tr class="border-b text-gray-600">
+                  <th class="py-2 pr-4">Name</th>
+                  <th class="py-2 pr-4">Users</th>
+                  <th class="py-2 pr-4">Departments</th>
+                  <th class="py-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% providers.forEach(function(p){ %>
+                  <tr class="border-b">
+                    <td class="py-2 pr-4 font-medium text-gray-900"><%= p.name %></td>
+                    <td class="py-2 pr-4"><%= p.userCount %></td>
+                    <td class="py-2 pr-4"><%= p.departmentCount %></td>
+                    <td class="py-2">
+                      <form action="/admin/service-providers/<%= p._id %>/delete" method="POST" onsubmit="return confirm('Delete this provider?');">
+                        <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="text-gray-600">No providers yet.</p>
+        <% } %>
+      </section>
+      <% } %>
       <% if (typeof stats !== 'undefined') { %>
       <section class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-lg shadow p-4">

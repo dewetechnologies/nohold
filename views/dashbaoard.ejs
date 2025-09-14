@@ -163,6 +163,59 @@
                     <p class="font-medium text-gray-800"><%= user.phone %></p>
                   </div>
                 </div>
+
+                <!-- Service Provider Section -->
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fa-solid fa-building"></i>
+                  </div>
+                  <div class="w-full">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <p class="text-sm text-gray-500">Service Providers</p>
+                        <p class="font-medium text-gray-800">
+                          <% let currentProvider = null; if (typeof providers !== 'undefined' && providers && providers.length) { %>
+                            <% const p = providers.find(p => (p._id && p._id.toString && (p._id.toString() === (locals.userServiceProviderId || '')))); if (p) { currentProvider = p; } %>
+                          <% } %>
+                          <% if (typeof userProviders !== 'undefined' && userProviders && userProviders.length) { %>
+                            <div class="flex flex-wrap gap-2 mt-1">
+                              <% userProviders.forEach(function(up){ %>
+                                <form action="/user/<%= userId %>/provider/<%= up._id %>/delete" method="POST" class="inline-flex items-center">
+                                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
+                                    <%= up.name %>
+                                    <button type="submit" class="ml-2 text-primary-700 hover:text-primary-900" title="Remove">
+                                      <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                  </span>
+                                </form>
+                              <% }) %>
+                            </div>
+                          <% } else { %>
+                            <%= (typeof userServiceProviderName !== 'undefined' && userServiceProviderName) ? userServiceProviderName : (currentProvider ? currentProvider.name : 'Not set') %>
+                          <% } %>
+                        </p>
+                      </div>
+                      <% if (typeof providers !== 'undefined' && providers && providers.length) { %>
+                        <button type="button" id="btn-edit-sp" class="ml-3 inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary-600 text-white hover:bg-primary-700" title="Add provider">
+                          <i class="fa-solid fa-plus"></i>
+                        </button>
+                      <% } %>
+                    </div>
+                    <% if (typeof providers !== 'undefined' && providers && providers.length) { %>
+                      <form id="form-set-sp" action="/user/<%= userId %>/provider" method="POST" class="mt-3 hidden">
+                        <div class="flex gap-2">
+                          <select name="serviceProviderId" class="flex-1 form-select" required>
+                            <option value="" disabled <%= (typeof userServiceProviderId === 'undefined' || !userServiceProviderId) ? 'selected' : '' %>>Select a provider</option>
+                            <% providers.forEach(function(p){ %>
+                              <option value="<%= p._id %>" <%= (typeof userServiceProviderId !== 'undefined' && String(p._id) === String(userServiceProviderId)) ? 'selected' : '' %>><%= p.name %></option>
+                            <% }) %>
+                          </select>
+                          <button class="px-4 py-2 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700" type="submit">Save</button>
+                        </div>
+                      </form>
+                    <% } %>
+                  </div>
+                </div>
               </div>
 
               <!-- Upload House Section -->
@@ -287,6 +340,18 @@
                 <input type="hidden" name="lastName" value="<%= user.lastName %>">
                 <input type="hidden" name="email" value="<%= user.email %>">
                 <input type="hidden" name="phone" value="<%= user.phone %>">
+              <% } %>
+
+              <% if (typeof providers !== 'undefined' && providers && providers.length) { %>
+              <div>
+                <label for="serviceProviderId" class="block text-sm font-medium text-gray-700 mb-2">Service Provider</label>
+                <select id="serviceProviderId" name="serviceProviderId" class="form-select" required>
+                  <option value="" disabled <%= (typeof userServiceProviderId === 'undefined' || !userServiceProviderId) ? 'selected' : '' %>>Select a provider</option>
+                  <% providers.forEach(function(p){ %>
+                    <option value="<%= p._id %>" <%= (typeof userServiceProviderId !== 'undefined' && String(p._id) === String(userServiceProviderId)) ? 'selected' : '' %>><%= p.name %></option>
+                  <% }) %>
+                </select>
+              </div>
               <% } %>
 
               <div>
@@ -456,6 +521,18 @@
 
   <%- include('partials/footer') %>
   
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('btn-edit-sp');
+      var form = document.getElementById('form-set-sp');
+      if (btn && form) {
+        btn.addEventListener('click', function () {
+          form.classList.toggle('hidden');
+        });
+      }
+    });
+  </script>
+
   <script>
     // Lightweight i18n for EN (English), AF (Afrikaans), ZU (isiZulu)
     (function() {

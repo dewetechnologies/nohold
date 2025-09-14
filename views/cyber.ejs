@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoHold Cybersecurity SaaS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .gradient-bg { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); }
+  </style>
+</head>
+<body class="font-sans bg-gray-50 antialiased">
+  <%- include('partials/navbar') %>
+
+  <header class="gradient-bg text-white py-20 text-center">
+    <div class="container mx-auto px-4">
+      <h1 class="text-4xl md:text-6xl font-bold mb-4">Cybersecurity SaaS</h1>
+      <p class="text-lg md:text-xl opacity-90 max-w-3xl mx-auto">Identify website vulnerabilities safely. Plan, scan, report, and remediate with a secure cloud platform.</p>
+    </div>
+  </header>
+
+  <main class="py-16">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <!-- Scan Form -->
+      <section class="mb-12">
+        <div class="bg-white rounded-xl shadow p-6">
+          <h2 class="text-2xl font-semibold mb-4">Quick Security Header Check</h2>
+          <p class="text-gray-600 mb-4">Enter a URL you own or have explicit permission to test. We perform a non-intrusive check for common security headers and HTTPS posture.</p>
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="mb-4 p-3 rounded bg-red-50 text-red-700 border border-red-200"><%= error %></div>
+          <% } %>
+          <form action="/cyber/scan" method="POST" class="grid md:grid-cols-6 gap-4 items-end">
+            <div class="md:col-span-4">
+              <label for="url" class="block text-sm font-medium text-gray-700 mb-1">Target URL</label>
+              <input id="url" name="url" type="url" required placeholder="https://example.com" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" value="<%= typeof lastUrl !== 'undefined' ? lastUrl : '' %>">
+            </div>
+            <div class="md:col-span-2 flex items-center space-x-2">
+              <input id="confirmAuth" name="confirmAuth" type="checkbox" value="yes" class="w-4 h-4 border-gray-300" required>
+              <label for="confirmAuth" class="text-sm text-gray-700">I am authorized to scan this site</label>
+            </div>
+            <div class="md:col-span-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <label class="inline-flex items-center space-x-2">
+                <input type="checkbox" name="tests" value="headers" class="w-4 h-4" checked>
+                <span class="text-sm">Security headers</span>
+              </label>
+              <label class="inline-flex items-center space-x-2">
+                <input type="checkbox" name="tests" value="xss" class="w-4 h-4" checked>
+                <span class="text-sm">XSS reflection (GET)</span>
+              </label>
+              <label class="inline-flex items-center space-x-2">
+                <input type="checkbox" name="tests" value="sqli" class="w-4 h-4" checked>
+                <span class="text-sm">SQLi error hints (GET)</span>
+              </label>
+              <label class="inline-flex items-center space-x-2">
+                <input type="checkbox" name="tests" value="tls" class="w-4 h-4">
+                <span class="text-sm">HTTPS/TLS check</span>
+              </label>
+            </div>
+            <div class="md:col-span-6">
+              <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700">Scan</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <% if (typeof scan !== 'undefined' && scan) { %>
+      <!-- Results -->
+      <section class="mb-16">
+        <div class="bg-white rounded-xl shadow p-6">
+          <h3 class="text-2xl font-semibold mb-2">Results for <span class="text-blue-700"><%= scan.url %></span></h3>
+          <p class="text-gray-600 mb-4">Status: <span class="font-medium"><%= scan.status || 'N/A' %></span> | Final URL: <%= scan.finalUrl || scan.url %></p>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold mb-2">Observed Response Headers</h4>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <% Object.keys(scan.headers || {}).sort().forEach(function(k){ %>
+                  <li><span class="font-mono"><%= k %>:</span> <span class="break-all"><%= scan.headers[k] %></span></li>
+                <% }) %>
+              </ul>
+              <% if (scan.tests && scan.tests.length) { %>
+                <p class="text-xs text-gray-500 mt-3">Tests run: <%= scan.tests.join(', ') %></p>
+              <% } %>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">Findings</h4>
+              <ul class="space-y-2">
+                <% if (findings && findings.length) { %>
+                  <% findings.forEach(function(f){ %>
+                    <li class="p-3 rounded border <%= f.severity === 'high' ? 'border-red-300 bg-red-50' : (f.severity === 'medium' ? 'border-yellow-300 bg-yellow-50' : 'border-gray-200 bg-gray-50') %>">
+                      <div class="text-sm uppercase tracking-wide font-semibold <%= f.severity === 'high' ? 'text-red-700' : (f.severity === 'medium' ? 'text-yellow-700' : 'text-gray-700') %>"><%= f.severity %></div>
+                      <div class="font-medium"><%= f.title %></div>
+                      <div class="text-sm text-gray-700"><%= f.detail %></div>
+                    </li>
+                  <% }) %>
+                <% } else { %>
+                  <li class="p-3 rounded border border-green-300 bg-green-50">
+                    <div class="font-medium text-green-800">No obvious issues detected with the checked headers.</div>
+                  </li>
+                <% } %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <% } %>
+      <section class="mb-12">
+        <h2 class="text-3xl font-bold mb-4">1. Define Your Scope</h2>
+        <ul class="list-disc pl-6 text-gray-700 space-y-2">
+          <li><strong>Target Audience:</strong> SMBs, enterprises, developers.</li>
+          <li><strong>Vulnerability Coverage:</strong> SQLi, XSS, CSRF, SSRF, IDOR, misconfig, weak crypto.</li>
+        </ul>
+      </section>
+
+      <section class="mb-12">
+        <h2 class="text-3xl font-bold mb-4">2. Research and Compliance</h2>
+        <ul class="list-disc pl-6 text-gray-700 space-y-2">
+          <li><strong>Permissioned Scanning:</strong> Only scan domains you own or have explicit consent for.</li>
+          <li><strong>Standards:</strong> OWASP Top Ten, ASVS. Keep audit logs.</li>
+        </ul>
+      </section>
+
+      <section class="mb-12 grid md:grid-cols-2 gap-8">
+        <div>
+          <h2 class="text-3xl font-bold mb-4">3. Technology Stack</h2>
+          <ul class="list-disc pl-6 text-gray-700 space-y-2">
+            <li><strong>Backend:</strong> Node.js/Express or Python (Flask/Django).</li>
+            <li><strong>Frontend:</strong> React/Vue or EJS for SSR MVP.</li>
+            <li><strong>Database:</strong> PostgreSQL or MongoDB for users, scans, findings.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold mb-4">4. Vulnerability Scanning Engine</h2>
+          <ul class="list-disc pl-6 text-gray-700 space-y-2">
+            <li><strong>Integrate:</strong> OWASP ZAP, Nikto; later add custom rules.</li>
+            <li><strong>Techniques:</strong> Static and dynamic analysis; authenticated scans; rate limits.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="mb-12 grid md:grid-cols-2 gap-8">
+        <div>
+          <h2 class="text-3xl font-bold mb-4">5. User Interface</h2>
+          <ul class="list-disc pl-6 text-gray-700 space-y-2">
+            <li><strong>Dashboard:</strong> Projects, targets, last scans, severity charts.</li>
+            <li><strong>Reporting:</strong> Export PDF/CSV; share links; remediation guides.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold mb-4">6. Security Measures</h2>
+          <ul class="list-disc pl-6 text-gray-700 space-y-2">
+            <li><strong>Data Protection:</strong> Encrypted at-rest/in-transit, least privilege.</li>
+            <li><strong>AuthN/AuthZ:</strong> OAuth/JWT, MFA; per-project RBAC.</li>
+            <li><strong>Abuse Controls:</strong> Rate limit scans, quotas, webhook verification.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="mb-12 grid md:grid-cols-2 gap-8">
+        <div>
+          <h2 class="text-3xl font-bold mb-4">7. Testing & QA</h2>
+          <ul class="list-disc pl-6 text-gray-700 space-y-2">
+            <li>Private beta; bug bounty-friendly disclosure.</li>
+            <li>CI for scanners; regression test packs; canary releases.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold mb-4">8. Marketing & Launch</h2>
+          <ul class="list-disc pl-6 text-gray-700 space-y-2">
+            <li>Brand site, docs, pricing; SEO on OWASP topics.</li>
+            <li>Free trial; usage-based plans; founder-led demos.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="mb-12">
+        <h2 class="text-3xl font-bold mb-4">9. Maintenance & Support</h2>
+        <ul class="list-disc pl-6 text-gray-700 space-y-2">
+          <li>Ticketing, status page, incident comms.</li>
+          <li>Rule updates; CVE feeds; periodic pentests.</li>
+        </ul>
+      </section>
+
+      <section class="mb-16">
+        <div class="p-6 bg-white rounded-xl shadow flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-semibold mb-2">Ready to prototype?</h3>
+            <p class="text-gray-600">We can scaffold Projects/Targets/Scans models and integrate OWASP ZAP in a worker.</p>
+          </div>
+          <a href="/contact" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700">Contact Us</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

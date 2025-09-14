@@ -1,417 +1,998 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NoHold - Modern Customer Support</title>
-  <!-- Modern CSS approach with Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              200: '#bfdbfe',
-              300: '#93c5fd',
-              400: '#60a5fa',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-              800: '#1e40af',
-              900: '#1e3a8a',
-            },
-            accent: '#f59e0b'
-          },
-          fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-          },
-          animation: {
-            'fade-in': 'fadeIn 0.5s ease-out',
-            'slide-up': 'slideUp 0.5s ease-out',
-          },
-          keyframes: {
-            fadeIn: {
-              '0%': { opacity: '0' },
-              '100%': { opacity: '1' },
-            },
-            slideUp: {
-              '0%': { transform: 'translateY(10px)', opacity: '0' },
-              '100%': { transform: 'translateY(0)', opacity: '1' },
-            }
-          }
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>🎥 Professional Video Reaction Recorder</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body { 
+      font-family: 'Arial', sans-serif; 
+      text-align: center; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      padding: 10px;
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    }
+    
+    h2 {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    /* Video container - responsive */
+    #videoContainer { 
+      position: relative; 
+      width: 100%;
+      max-width: 95vw;
+      max-height: 60vh;
+      margin: 20px auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border-radius: 15px;
+      overflow: hidden;
+      background: #000;
+      touch-action: none;
+    }
+    
+    #videoPlayer { 
+      width: 100%; 
+      height: 100%;
+      display: block;
+      background: #000;
+      object-fit: contain;
+      touch-action: none;
+    }
+    
+    /* Camera overlay - improved for mobile */
+    #reactionOverlay {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      width: 150px;
+      height: 150px;
+      border: 3px solid #ff6b6b;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #000;
+      z-index: 10;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    #reactionOverlay:active {
+      cursor: grabbing;
+    }
+    
+    #reactionOverlay.resizing {
+      border-color: #4CAF50;
+      border-width: 4px;
+    }
+
+    /* File upload styling */
+    .file-upload-container {
+      margin: 20px 0;
+      position: relative;
+    }
+    
+    #uploadVideo {
+      display: none;
+    }
+    
+    .upload-label {
+      display: inline-block;
+      padding: 15px 30px;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+    }
+    
+    .upload-label:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(238, 90, 36, 0.6);
+    }
+
+    /* Audio controls - responsive */
+    .audio-controls {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 15px;
+      border-radius: 25px;
+      backdrop-filter: blur(5px);
+      min-width: 200px;
+    }
+    
+    .volume-control label {
+      font-weight: bold;
+      min-width: 70px;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+    }
+    
+    .volume-control input[type="range"] {
+      flex: 1;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      outline: none;
+      appearance: none;
+    }
+    
+    .volume-control input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #ff6b6b;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* Quality settings - mobile friendly */
+    .quality-settings {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .quality-option {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+    }
+    
+    .quality-option select {
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: clamp(0.9rem, 2vw, 1rem);
+      cursor: pointer;
+      padding: 5px;
+    }
+    
+    .quality-option select option {
+      background: #333;
+      color: white;
+    }
+
+    /* Button styling - mobile optimized */
+    .controls { 
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    
+    .controls.playing {
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+    }
+    
+    button {
+      margin: 5px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      cursor: pointer;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      min-width: 120px;
+      touch-action: manipulation;
+    }
+    
+    button:hover:not(:disabled) { 
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    }
+    
+    button:disabled { 
+      background: #888;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      opacity: 0.6;
+    }
+    
+    button.recording {
+      background: linear-gradient(45deg, #ff4757, #ff3838);
+      animation: pulse 1.5s ease-in-out infinite alternate;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4); }
+      100% { box-shadow: 0 8px 30px rgba(255, 71, 87, 0.8); }
+    }
+
+    /* Status indicator */
+    .status-indicator {
+      margin: 15px 0;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      display: none;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+    }
+    
+    .status-indicator.show {
+      display: block;
+    }
+    
+    .status-indicator.recording {
+      background: rgba(255, 71, 87, 0.2);
+      border: 2px solid #ff4757;
+    }
+    
+    .status-indicator.ready {
+      background: rgba(46, 213, 115, 0.2);
+      border: 2px solid #2ed573;
+    }
+
+    /* Preview container */
+    #previewContainer { 
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+    
+    #previewVideo { 
+      width: 100%;
+      max-width: 600px;
+      border-radius: 10px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    
+    .hidden { display: none !important; }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      #reactionOverlay {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .volume-control {
+        min-width: 180px;
+        padding: 8px 12px;
+      }
+      
+      button {
+        min-width: 100px;
+        padding: 10px 15px;
       }
     }
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style type="text/css">
-    .gradient-bg {
-      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-    }
-    .hero-pattern {
-      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-    .card-hover {
-      transition: all 0.3s ease;
-    }
-    .card-hover:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    .stat-number {
-      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    
+    @media (max-width: 480px) {
+      #videoContainer {
+        max-height: 50vh;
+      }
+      
+      #reactionOverlay {
+        width: 100px;
+        height: 100px;
+        left: 15px;
+        top: 15px;
+      }
+      
+      .volume-control {
+        flex-direction: column;
+        text-align: center;
+        min-width: 150px;
+      }
+      
+      .quality-settings {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 </head>
-<body class="font-sans bg-gray-50 antialiased">
-  <!-- Navigation Bar -->
-  <%- include('partials/navbar') %>
-  
-  <div class="site-content">
-    <!-- Sign-In Modal (Modernized) -->
-    <div id="signInModal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300">
-      <div class="modal-content bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-transform duration-300 scale-95">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-2xl font-semibold text-gray-800">Sign In to NoHold </h3>
-          <button id="closeModalBtn" class="text-gray-500 hover:text-gray-800 transition-colors">
-            <i class="fa-solid fa-xmark text-xl"></i>
-          </button>
-        </div>
-        <form class="space-y-5">
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email or Phone</label>
-            <input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition" placeholder="Enter email or phone">
-          </div>
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition" placeholder="Enter password">
-          </div>
-          <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors">Sign In</button>
-        </form>
-        <p class="mt-6 text-center text-sm text-gray-600">Don't have an account? <a href="/signup" class="text-primary-600 hover:text-primary-800 font-medium transition-colors">Sign up</a></p>
+<body>
+  <div class="container">
+    <h2>🎥 Professional Video Reaction Recorder</h2>
+
+    <!-- Upload video -->
+    <div class="file-upload-container">
+      <input type="file" id="uploadVideo" accept="video/*" />
+      <label for="uploadVideo" class="upload-label">📹 Upload Video File</label>
+    </div>
+
+    <!-- Quality settings -->
+    <div class="quality-settings">
+      <div class="quality-option">
+        <label>Quality: </label>
+        <select id="videoQuality">
+          <option value="1080p">1080p HD</option>
+          <option value="720p" selected>720p (Recommended)</option>
+          <option value="480p">480p</option>
+        </select>
+      </div>
+      <div class="quality-option">
+        <label>FPS: </label>
+        <select id="frameRate">
+          <option value="60">60 FPS</option>
+          <option value="30" selected>30 FPS</option>
+          <option value="24">24 FPS</option>
+        </select>
       </div>
     </div>
 
-    <!-- Header / Hero Section -->
-    <header class="gradient-bg text-white py-24 text-center relative overflow-hidden" style="background-image: url('https://img.freepik.com/free-vector/blank-blue-halftone-background_53876-114466.jpg'); background-size: cover; background-position: center;">
-      <div class="absolute inset-0 bg-black opacity-10"></div>
-      <div class="container mx-auto px-4 relative z-10">
-        <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-slide-up">NoHold </h1>
-        <p class="text-xl md:text-2xl mb-6 animate-slide-up" style="animation-delay: 0.1s">Help, without the wait.</p>
-        <p class="text-lg md:text-xl mb-10 max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.2s">Say goodbye to long hold times. With NoHold , request a callback through WhatsApp, USSD, or our website, and connect with a  agent at your convenience.</p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4 animate-slide-up" style="animation-delay: 0.3s">
-          <a href="https://img.freepik.com/free-vector/blank-blue-halftone-background_53876-114466.jpg" id="openSignInBtn" class="bg-accent text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-yellow-500 transition-colors text-lg inline-flex items-center justify-center">
-            <i class="fa-solid fa-phone mr-2"></i> Request a Callback
-          </a>
-          <a href="#how-it-works" class="bg-white bg-opacity-10 backdrop-blur-sm border-2 border-white border-opacity-30 text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:bg-opacity-20 transition-colors text-lg inline-flex items-center justify-center">
-            <i class="fa-solid fa-circle-info mr-2"></i> Learn More
-          </a>
-        </div>
+    <!-- Audio controls -->
+    <div class="audio-controls">
+      <div class="volume-control">
+        <label>Video Audio:</label>
+        <input type="range" id="videoVolume" min="0" max="1" step="0.1" value="0.7">
+        <span id="videoVolumeValue">70%</span>
       </div>
-      <div class="absolute bottom-0 left-0 right-0 h-16 bg-white transform skew-y-2 translate-y-8 z-20"></div>
-    </header>
+      <div class="volume-control">
+        <label>Mic Audio:</label>
+        <input type="range" id="cameraVolume" min="0" max="1" step="0.1" value="0.8">
+        <span id="cameraVolumeValue">80%</span>
+      </div>
+    </div>
 
-    <!-- How It Works Section -->
-    <section id="how-it-works" class="py-20 bg-white">
-      <div class="container mx-auto px-4">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-          <h2 class="text-4xl md:text-5xl font-bold mb-6">How NoHold  Works</h2>
-          <p class="text-xl text-gray-600">Our innovative callback system ensures you get personalized support without the frustration of waiting on hold. Follow these three simple steps.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="text-center p-8 feature-card bg-gray-50 rounded-2xl card-hover">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-primary-100 text-primary-600 rounded-2xl text-3xl mb-6">
-              <i class="fa-solid fa-message"></i>
-            </div>
-            <h3 class="text-2xl font-semibold mb-4">Request a Callback</h3>
-            <p class="text-gray-600">Send a message via WhatsApp, USSD (*180#), or the  website. Share your issue, and we'll take it from there.</p>
-          </div>
-          <div class="text-center p-8 feature-card bg-gray-50 rounded-2xl card-hover">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-primary-100 text-primary-600 rounded-2xl text-3xl mb-6">
-              <i class="fa-regular fa-clock"></i>
-            </div>
-            <h3 class="text-2xl font-semibold mb-4">Confirm Your Time</h3>
-            <p class="text-gray-600">Select a convenient callback time. Our system confirms your slot and matches you with the right agent.</p>
-          </div>
-          <div class="text-center p-8 feature-card bg-gray-50 rounded-2xl card-hover">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-primary-100 text-primary-600 rounded-2xl text-3xl mb-6">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <h3 class="text-2xl font-semibold mb-4">Connect with an Agent</h3>
-            <p class="text-gray-600">Receive a call from a  expert ready to resolve your billing, technical, or account query efficiently.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- Status indicator -->
+    <div id="statusIndicator" class="status-indicator">
+      <strong>Status:</strong> <span id="statusText">Ready to start</span>
+    </div>
 
-    <!-- Core Features Section -->
-    <section class="py-20 bg-gray-50">
-      <div class="container mx-auto px-4">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-          <h2 class="text-4xl md:text-5xl font-bold mb-6">Why Choose NoHold ?</h2>
-          <p class="text-xl text-gray-600">Our service is built to make customer support seamless, accessible, and efficient for all South Africans.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
-              <i class="fa-solid fa-comments"></i>
-            </div>
-            <h3 class="text-xl font-semibold mb-3">Multiple Channels</h3>
-            <p class="text-gray-600">Request support via WhatsApp, USSD, or our website, giving you flexibility to choose your preferred platform.</p>
-          </div>
-          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
-              <i class="fa-solid fa-robot"></i>
-            </div>
-            <h3 class="text-xl font-semibold mb-3">Smart Issue Routing</h3>
-            <p class="text-gray-600">Our AI-driven system directs your query to the right department for quick and accurate resolution.</p>
-          </div>
-          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
-              <i class="fa-regular fa-calendar-check"></i>
-            </div>
-            <h3 class="text-xl font-semibold mb-3">Scheduled Callbacks</h3>
-            <p class="text-gray-600">Choose a time that suits you, and we'll confirm your callback to ensure you're never left waiting.</p>
-          </div>
-          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
-              <i class="fa-solid fa-language"></i>
-            </div>
-            <h3 class="text-xl font-semibold mb-3">Multilingual Support</h3>
-            <p class="text-gray-600">Get help in eight South African languages, ensuring clear and comfortable communication.</p>
-          </div>
-          <div class="p-6 feature-card bg-white rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-100 text-primary-600 rounded-xl text-xl mb-4">
-              <i class="fa-solid fa-mobile-screen-button"></i>
-            </div>
-            <h3 class="text-xl font-semibold mb-3">Universal Compatibility</h3>
-            <p class="text-gray-600">Accessible on smartphones and basic phones, making support available to everyone, everywhere.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <div id="videoContainer">
+      <video id="videoPlayer" crossorigin="anonymous" playsinline></video>
+      <video id="reactionOverlay" autoplay muted playsinline></video>
+    </div>
 
-    <!-- Customer Success Section -->
-    <section class="py-20 bg-white">
-      <div class="container mx-auto px-4">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-          <h2 class="text-4xl md:text-5xl font-bold mb-6">Our Impact in Numbers</h2>
-          <p class="text-xl text-gray-600">NoHold  is transforming customer service with impressive results, from handling millions of calls to boosting satisfaction across South Africa.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="text-center p-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl">
-            <h3 class="text-5xl font-bold mb-4 stat-number">46.48%</h3>
-            <p class="text-lg text-gray-700">of calls handled automatically, processing over 1 million calls monthly with efficiency.</p>
-          </div>
-          <div class="text-center p-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl">
-            <h3 class="text-5xl font-bold mb-4 stat-number">71%</h3>
-            <p class="text-lg text-gray-700">positive customer sentiment, reflecting high satisfaction with  services.</p>
-          </div>
-          <div class="text-center p-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl">
-            <h3 class="text-5xl font-bold mb-4 stat-number">42%</h3>
-            <p class="text-lg text-gray-700">increase in first-contact resolution, ensuring issues are resolved quickly.</p>
-          </div>
-        </div>
-        <p class="text-center text-sm mt-12 text-gray-500">*Metrics based on 's broader customer service initiatives and NOHOLD's AI implementation.</p>
-      </div>
-    </section>
+    <div class="controls" id="mainControls">
+      <button id="startCamera">📷 Enable Camera</button>
+      <button id="switchCamera">🔄 Switch Camera</button>
+      <button id="pauseVideo" class="hidden">⏸️ Pause</button>
+      <button id="startRecording">🔴 Start Recording</button>
+      <button id="stopRecording" disabled>⏹️ Stop</button>
+    </div>
 
-    <!-- Why It Matters Section -->
-    <section class="py-20 bg-gray-50">
-      <div class="container mx-auto px-4">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-          <h2 class="text-4xl md:text-5xl font-bold mb-6">Why NoHold  Matters</h2>
-          <p class="text-xl text-gray-600">We're redefining customer service by putting you first, with measurable improvements that make a difference.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="p-8 bg-white rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-green-100 text-green-600 rounded-xl text-xl mb-4">
-              <i class="fa-solid fa-gauge-high"></i>
-            </div>
-            <h3 class="text-2xl font-semibold mb-3">40% Faster Support</h3>
-            <p class="text-gray-600">Callback requests reduce waiting times by up to 40%, getting you help faster.</p>
-          </div>
-          <div class="p-8 bg-white rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-green-100 text-green-600 rounded-xl text-xl mb-4">
-              <i class="fa-solid fa-phone-slash"></i>
-            </div>
-            <h3 class="text-2xl font-semibold mb-3">Fewer Dropped Calls</h3>
-            <p class="text-gray-600">Scheduled callbacks eliminate dropped calls, ensuring reliable support.</p>
-          </div>
-          <div class="p-8 bg-white rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-green-100 text-green-600 rounded-xl text-xl mb-4">
-              <i class="fa-solid fa-globe"></i>
-            </div>
-            <h3 class="text-2xl font-semibold mb-3">Inclusive Access</h3>
-            <p class="text-gray-600">Support for basic phones and multiple languages reaches all South Africans.</p>
-          </div>
-          <div class="p-8 bg-white rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-green-100 text-green-600 rounded-xl text-xl mb-4">
-              <i class="fa-solid fa-handshake"></i>
-            </div>
-            <h3 class="text-2xl font-semibold mb-3">Trusted Service</h3>
-            <p class="text-gray-600">Our customer-first approach boosts trust and satisfaction, with 71% positive feedback.</p>
-          </div>
-        </div>
-        <div class="text-center mt-16">
-          <a href="#" class="bg-primary-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-primary-700 transition-colors inline-flex items-center text-lg">
-            <i class="fa-solid fa-star mr-2"></i> Experience the Difference
-          </a>
-        </div>
+    <div id="previewContainer" class="hidden">
+      <h3>🎬 Preview Recording</h3>
+      <video id="previewVideo" controls playsinline></video>
+      <div class="controls">
+        <button id="downloadRecording">💾 Download</button>
+        <button id="discardRecording">🗑️ Try Again</button>
       </div>
-    </section>
-
-    <!-- Testimonial Section -->
-    <section class="py-20 bg-white">
-      <div class="container mx-auto px-4">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-          <h2 class="text-4xl md:text-5xl font-bold mb-6">What Our Customers Say</h2>
-          <p class="text-xl text-gray-600">Hear from real customers who have experienced the NoHold  difference.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
-          <div class="p-8 bg-gray-50 rounded-2xl card-hover">
-            <div class="flex items-center mb-4 text-yellow-400">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-            </div>
-            <p class="text-gray-600 italic mb-6">"Speaking in isiZulu made all the difference. The agent understood my needs perfectly."</p>
-            <div class="flex items-center">
-              <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold mr-3">TN</div>
-              <div>
-                <p class="font-semibold">Thandiwe N.</p>
-                <p class="text-sm text-gray-500">Durban</p>
-              </div>
-            </div>
-          </div>
-          <div class="p-8 bg-gray-50 rounded-2xl card-hover">
-            <div class="flex items-center mb-4 text-yellow-400">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-            </div>
-            <p class="text-gray-600 italic mb-6">"Using USSD on my old phone was so simple. NoHold  works for everyone."</p>
-            <div class="flex items-center">
-              <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold mr-3">DK</div>
-              <div>
-                <p class="font-semibold">David K.</p>
-                <p class="text-sm text-gray-500">Cape Town</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
   </div>
 
-  <%- include('partials/call-cta') %>
-  
-  <!-- Footer -->
-  <%- include('partials/footer') %>
-  
   <script>
-    // Modern JavaScript for modal functionality and page motions
-    document.addEventListener('DOMContentLoaded', function() {
-      const modal = document.getElementById('signInModal');
-      const closeModalBtn = document.getElementById('closeModalBtn');
-      
-      // Function to open modal
-      function openModal() {
-        modal.classList.remove('opacity-0', 'pointer-events-none');
-        modal.classList.add('opacity-100');
-        modal.querySelector('.modal-content').classList.remove('scale-95');
-        modal.querySelector('.modal-content').classList.add('scale-100');
-      }
-      
-      // Function to close modal
-      function closeModal() {
-        modal.classList.remove('opacity-100');
-        modal.classList.add('opacity-0', 'pointer-events-none');
-        modal.querySelector('.modal-content').classList.remove('scale-100');
-        modal.querySelector('.modal-content').classList.add('scale-95');
-      }
-      
-      // Close modal when clicking the close button
-      if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', closeModal);
-      }
-      
-      // Close modal when clicking outside the modal content
-      modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-          closeModal();
-        }
-      });
-      
-      // Add animation to elements on scroll
-      const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-      };
+    // DOM elements
+    const videoPlayer = document.getElementById("videoPlayer");
+    const reactionOverlay = document.getElementById("reactionOverlay");
+    const startCameraBtn = document.getElementById("startCamera");
+    const switchCameraBtn = document.getElementById("switchCamera");
+    const pauseVideoBtn = document.getElementById("pauseVideo");
+    const startRecordingBtn = document.getElementById("startRecording");
+    const stopRecordingBtn = document.getElementById("stopRecording");
+    const previewContainer = document.getElementById("previewContainer");
+    const previewVideo = document.getElementById("previewVideo");
+    const downloadRecordingBtn = document.getElementById("downloadRecording");
+    const discardRecordingBtn = document.getElementById("discardRecording");
+    const statusIndicator = document.getElementById("statusIndicator");
+    const statusText = document.getElementById("statusText");
+    const videoVolumeSlider = document.getElementById("videoVolume");
+    const cameraVolumeSlider = document.getElementById("cameraVolume");
+    const videoVolumeValue = document.getElementById("videoVolumeValue");
+    const cameraVolumeValue = document.getElementById("cameraVolumeValue");
+    const videoQuality = document.getElementById("videoQuality");
+    const frameRate = document.getElementById("frameRate");
+    const mainControls = document.getElementById("mainControls");
 
-      // Open /signin from hero CTA (no modal)
-      const openBtn = document.getElementById('openSignInBtn');
-      if (openBtn) {
-        openBtn.addEventListener('click', function(e){
-          e.preventDefault();
-          window.location.href = '/signin';
-        });
-      }
-      
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const el = entry.target;
-            // choose animation based on element type
-            if (el.matches('h1, h2, h3, header .container > *')) {
-              el.classList.add('animate-slide-up');
-            } else if (el.matches('p, .success-metric')) {
-              el.classList.add('animate-fade-in');
-            } else {
-              el.classList.add('animate-slide-up');
-            }
-            el.classList.remove('opacity-0');
-            observer.unobserve(el);
-          }
-        });
-      }, observerOptions);
+    // Global variables
+    let cameraStream = null;
+    let currentFacing = "user";
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+    let canvas = null;
+    let audioContext = null;
+    let videoAudioGain = null;
+    let cameraAudioGain = null;
+    let mixedAudio = null;
+    let isDragging = false;
+    let isResizing = false;
+    let startX = 0;
+    let startY = 0;
+    let initialDistance = 0;
+    let initialSize = 150;
 
-      // Targets to animate on scroll
-      const targets = [
-        ...document.querySelectorAll('section h2'),
-        ...document.querySelectorAll('section p'),
-        ...document.querySelectorAll('.feature-card'),
-        ...document.querySelectorAll('.success-metric'),
-        ...document.querySelectorAll('.card-hover'),
-        ...document.querySelectorAll('header .container > *')
-      ];
+    // Update status function
+    function updateStatus(message, type = 'ready') {
+      statusText.textContent = message;
+      statusIndicator.className = `status-indicator show ${type}`;
+    }
 
-      // Initialize hidden state unless reduced motion
-      targets.forEach(el => {
-        if (!prefersReduced) {
-          el.classList.add('opacity-0');
-          observer.observe(el);
-        } else {
-          // show immediately without animation for reduced motion users
-          el.style.opacity = 1;
-        }
-      });
+    // Volume control handlers
+    videoVolumeSlider.addEventListener('input', () => {
+      const value = Math.round(videoVolumeSlider.value * 100);
+      videoVolumeValue.textContent = `${value}%`;
+      videoPlayer.volume = videoVolumeSlider.value;
+      if (videoAudioGain) videoAudioGain.gain.value = videoVolumeSlider.value;
     });
+
+    cameraVolumeSlider.addEventListener('input', () => {
+      const value = Math.round(cameraVolumeSlider.value * 100);
+      cameraVolumeValue.textContent = `${value}%`;
+      if (cameraAudioGain) cameraAudioGain.gain.value = cameraVolumeSlider.value;
+    });
+
+    // File upload handler
+    document.getElementById("uploadVideo").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file && file.type.startsWith("video/")) {
+        updateStatus("Loading video...", "recording");
+        
+        const videoUrl = URL.createObjectURL(file);
+        videoPlayer.src = videoUrl;
+        videoPlayer.load();
+        
+        pauseVideoBtn.classList.remove("hidden");
+        updateStatus("Video loaded! Enable camera to continue.", "ready");
+      } else {
+        alert("Please select a valid video file.");
+      }
+    });
+
+    // Video loaded handler
+    videoPlayer.addEventListener("loadedmetadata", () => {
+      const quality = videoQuality.value;
+      let width, height;
+      
+      const aspectRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
+      
+      switch(quality) {
+        case '1080p':
+          height = 1080;
+          width = Math.round(height * aspectRatio);
+          break;
+        case '720p':
+          height = 720;
+          width = Math.round(height * aspectRatio);
+          break;
+        case '480p':
+          height = 480;
+          width = Math.round(height * aspectRatio);
+          break;
+        default:
+          width = videoPlayer.videoWidth;
+          height = videoPlayer.videoHeight;
+      }
+      
+      canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      
+      const container = document.getElementById('videoContainer');
+      container.style.aspectRatio = `${aspectRatio}`;
+      
+      console.log(`Canvas: ${width}x${height}, Aspect: ${aspectRatio}`);
+      updateStatus(`Video ready (${width}x${height})`, "ready");
+    });
+
+    // Camera functions
+    async function startCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+      }
+      
+      updateStatus("Starting camera...", "recording");
+      
+      try {
+        const constraints = {
+          video: { 
+            facingMode: currentFacing,
+            width: { ideal: 1920, min: 640 },
+            height: { ideal: 1080, min: 480 },
+            frameRate: { ideal: 30 }
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: false,
+            sampleRate: 48000
+          }
+        };
+        
+        cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+        reactionOverlay.srcObject = cameraStream;
+        
+        startCameraBtn.textContent = "✅ Camera Ready";
+        startCameraBtn.disabled = true;
+        updateStatus("Camera ready! You can now record.", "ready");
+      } catch (err) {
+        console.error("Camera error:", err);
+        updateStatus("Camera access failed", "recording");
+        alert("Please allow camera and microphone access to continue.");
+      }
+    }
+
+    startCameraBtn.addEventListener("click", startCamera);
+
+    // Switch camera
+    switchCameraBtn.addEventListener("click", () => {
+      currentFacing = currentFacing === "user" ? "environment" : "user";
+      startCamera();
+    });
+
+    // Pause/play video
+    function toggleVideoPlayback() {
+      if (videoPlayer.paused) {
+        videoPlayer.play();
+        pauseVideoBtn.textContent = "⏸️ Pause";
+      } else {
+        videoPlayer.pause();
+        pauseVideoBtn.textContent = "▶️ Play";
+      }
+    }
+
+    pauseVideoBtn.addEventListener("click", toggleVideoPlayback);
+
+    // Auto-hide controls when playing
+    videoPlayer.addEventListener("play", () => {
+      mainControls.classList.add('playing');
+    });
+
+    videoPlayer.addEventListener("pause", () => {
+      mainControls.classList.remove('playing');
+    });
+
+    // Touch and drag functionality for overlay
+    function getTouchDistance(touch1, touch2) {
+      const dx = touch1.clientX - touch2.clientX;
+      const dy = touch1.clientY - touch2.clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function constrainPosition(element, container) {
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = element.getBoundingClientRect();
+      
+      let left = element.offsetLeft;
+      let top = element.offsetTop;
+      
+      left = Math.max(0, Math.min(left, containerRect.width - element.offsetWidth));
+      top = Math.max(0, Math.min(top, containerRect.height - element.offsetHeight));
+      
+      element.style.left = left + "px";
+      element.style.top = top + "px";
+    }
+
+    // Mouse events for overlay
+    reactionOverlay.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      isDragging = true;
+      startX = e.clientX - reactionOverlay.offsetLeft;
+      startY = e.clientY - reactionOverlay.offsetTop;
+      
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    });
+
+    function handleMouseMove(e) {
+      if (!isDragging || isResizing) return;
+      
+      const newLeft = e.clientX - startX;
+      const newTop = e.clientY - startY;
+      
+      reactionOverlay.style.left = newLeft + "px";
+      reactionOverlay.style.top = newTop + "px";
+      
+      constrainPosition(reactionOverlay, videoPlayer);
+    }
+
+    function handleMouseUp() {
+      isDragging = false;
+      isResizing = false;
+      reactionOverlay.classList.remove('resizing');
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseResize);
+    }
+
+    // Touch events for overlay - improved pinch support
+    reactionOverlay.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      
+      if (e.touches.length === 1) {
+        // Single touch - drag
+        isDragging = true;
+        const touch = e.touches[0];
+        startX = touch.clientX - reactionOverlay.offsetLeft;
+        startY = touch.clientY - reactionOverlay.offsetTop;
+      } else if (e.touches.length === 2) {
+        // Two touches - resize
+        isDragging = false;
+        isResizing = true;
+        reactionOverlay.classList.add('resizing');
+        
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        initialDistance = getTouchDistance(touch1, touch2);
+        initialSize = reactionOverlay.offsetWidth;
+      }
+    });
+
+    reactionOverlay.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+      
+      if (isDragging && e.touches.length === 1) {
+        // Drag
+        const touch = e.touches[0];
+        const newLeft = touch.clientX - startX;
+        const newTop = touch.clientY - startY;
+        
+        reactionOverlay.style.left = newLeft + "px";
+        reactionOverlay.style.top = newTop + "px";
+        
+        constrainPosition(reactionOverlay, videoPlayer);
+        
+      } else if (isResizing && e.touches.length === 2) {
+        // Pinch to resize
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const currentDistance = getTouchDistance(touch1, touch2);
+        const scale = currentDistance / initialDistance;
+        
+        let newSize = Math.max(80, Math.min(300, initialSize * scale));
+        
+        // Check container bounds
+        const containerRect = videoPlayer.getBoundingClientRect();
+        const maxWidth = containerRect.width - reactionOverlay.offsetLeft;
+        const maxHeight = containerRect.height - reactionOverlay.offsetTop;
+        newSize = Math.min(newSize, Math.min(maxWidth, maxHeight));
+        
+        reactionOverlay.style.width = newSize + "px";
+        reactionOverlay.style.height = newSize + "px";
+      }
+    });
+
+    reactionOverlay.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      isDragging = false;
+      isResizing = false;
+      reactionOverlay.classList.remove('resizing');
+    });
+
+    // Recording functions
+    function resetRecordingUI() {
+      startRecordingBtn.textContent = "🔴 Start Recording";
+      startRecordingBtn.classList.remove("recording");
+      startRecordingBtn.disabled = false;
+      stopRecordingBtn.disabled = true;
+    }
+
+    async function startRecording() {
+      console.log("Starting recording...");
+      
+      // Validation
+      if (!cameraStream) {
+        alert("Please enable camera first");
+        updateStatus("Camera required", "recording");
+        return;
+      }
+      
+      if (!videoPlayer.src) {
+        alert("Please upload a video first");
+        updateStatus("Video required", "recording");
+        return;
+      }
+      
+      if (!canvas) {
+        alert("Please wait for video to load");
+        updateStatus("Loading video...", "recording");
+        return;
+      }
+
+      // Reset previous recording
+      recordedChunks = [];
+      
+      // UI updates
+      startRecordingBtn.textContent = "🔴 Recording...";
+      startRecordingBtn.classList.add("recording");
+      startRecordingBtn.disabled = true;
+      stopRecordingBtn.disabled = false;
+      updateStatus("Recording started! Click Stop when done.", "recording");
+
+      const ctx = canvas.getContext("2d");
+      const fps = parseInt(frameRate.value);
+      
+      function drawFrame() {
+        if (!isRecording) return;
+        
+        try {
+          // Clear canvas
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Draw main video
+          if (videoPlayer.readyState >= 2) {
+            ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
+          }
+          
+          // Draw reaction overlay
+          if (reactionOverlay.readyState >= 2) {
+            const containerRect = videoPlayer.getBoundingClientRect();
+            const overlayRect = reactionOverlay.getBoundingClientRect();
+            
+            const scaleX = canvas.width / containerRect.width;
+            const scaleY = canvas.height / containerRect.height;
+            
+            const x = (overlayRect.left - containerRect.left) * scaleX;
+            const y = (overlayRect.top - containerRect.top) * scaleY;
+            const size = overlayRect.width * Math.min(scaleX, scaleY);
+            
+            if (size > 0 && x >= 0 && y >= 0) {
+              // Save context
+              ctx.save();
+              
+              // Create circular clip
+              const centerX = x + size/2;
+              const centerY = y + size/2;
+              const radius = size/2;
+              
+              ctx.beginPath();
+              ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+              ctx.clip();
+              
+              // Draw camera feed
+              ctx.drawImage(reactionOverlay, x, y, size, size);
+              
+              // Restore context
+              ctx.restore();
+              
+              // Draw border
+              ctx.strokeStyle = '#ff6b6b';
+              ctx.lineWidth = 3;
+              ctx.beginPath();
+              ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+              ctx.stroke();
+            }
+          }
+        } catch (error) {
+          console.error("Drawing error:", error);
+        }
+        
+        if (isRecording) {
+          setTimeout(() => requestAnimationFrame(drawFrame), 1000 / fps);
+        }
+      }
+
+      try {
+        // Audio setup
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const videoSource = audioContext.createMediaElementSource(videoPlayer);
+        const cameraSource = audioContext.createMediaStreamSource(cameraStream);
+        
+        videoAudioGain = audioContext.createGain();
+        cameraAudioGain = audioContext.createGain();
+        
+        videoAudioGain.gain.value = parseFloat(videoVolumeSlider.value);
+        cameraAudioGain.gain.value = parseFloat(cameraVolumeSlider.value);
+        
+        const compressor = audioContext.createDynamicsCompressor();
+        compressor.threshold.setValueAtTime(-24, audioContext.currentTime);
+        compressor.knee.setValueAtTime(30, audioContext.currentTime);
+        compressor.ratio.setValueAtTime(12, audioContext.currentTime);
+        compressor.attack.setValueAtTime(0.003, audioContext.currentTime);
+        compressor.release.setValueAtTime(0.25, audioContext.currentTime);
+        
+        mixedAudio = audioContext.createMediaStreamDestination();
+        
+        videoSource.connect(videoAudioGain);
+        cameraSource.connect(cameraAudioGain);
+        videoAudioGain.connect(compressor);
+        cameraAudioGain.connect(compressor);
+        compressor.connect(mixedAudio);
+        
+        // Create final stream
+        const canvasStream = canvas.captureStream(fps);
+        const audioTracks = mixedAudio.stream.getAudioTracks();
+        
+        const finalStream = new MediaStream([canvasStream.getVideoTracks()[0]]);
+        if (audioTracks.length > 0) {
+          finalStream.addTrack(audioTracks[0]);
+        }
+
+        // MediaRecorder setup with fallbacks
+        let options;
+        if (MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus')) {
+          options = {
+            mimeType: 'video/webm; codecs=vp9,opus',
+            videoBitsPerSecond: 8000000,
+            audioBitsPerSecond: 128000
+          };
+        } else if (MediaRecorder.isTypeSupported('video/webm; codecs=vp8,opus')) {
+          options = {
+            mimeType: 'video/webm; codecs=vp8,opus',
+            videoBitsPerSecond: 5000000,
+            audioBitsPerSecond: 128000
+          };
+        } else {
+          options = {
+            mimeType: 'video/webm',
+            videoBitsPerSecond: 3000000,
+            audioBitsPerSecond: 128000
+          };
+        }
+
+        console.log("Using recording options:", options);
+        
+        mediaRecorder = new MediaRecorder(finalStream, options);
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) {
+            recordedChunks.push(event.data);
+            console.log("Chunk recorded:", event.data.size, "bytes");
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          console.log("Recording stopped. Chunks:", recordedChunks.length);
+          
+          if (recordedChunks.length > 0) {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            console.log("Final recording size:", blob.size, "bytes");
+            
+            const url = URL.createObjectURL(blob);
+            previewVideo.src = url;
+            previewContainer.classList.remove("hidden");
+            updateStatus("Recording completed! Preview and download below.", "ready");
+          } else {
+            updateStatus("Recording failed - no data captured", "recording");
+            alert("Recording failed. Please try again.");
+          }
+          
+          resetRecordingUI();
+          if (audioContext) audioContext.close();
+        };
+
+        mediaRecorder.onerror = (event) => {
+          console.error("Recording error:", event.error);
+          updateStatus("Recording error occurred", "recording");
+          alert("Recording error: " + event.error.message);
+          resetRecordingUI();
+          if (audioContext) audioContext.close();
+        };
+
+        // Start recording
+        isRecording = true;
+        videoPlayer.play();
+        mediaRecorder.start(100);
+        drawFrame();
+        
+        console.log("Recording started successfully");
+
+      } catch (error) {
+        console.error("Recording setup failed:", error);
+        updateStatus("Recording setup failed", "recording");
+        alert("Failed to start recording: " + error.message);
+        resetRecordingUI();
+        if (audioContext) audioContext.close();
+      }
+    }
+
+    function stopRecording() {
+      console.log("Stopping recording...");
+      
+      if (mediaRecorder && isRecording) {
+        isRecording = false;
+        updateStatus("Finalizing recording...", "recording");
+        
+        try {
+          mediaRecorder.stop();
+        } catch (error) {
+          console.error("Error stopping recording:", error);
+          resetRecordingUI();
+        }
+      } else {
+        console.log("No active recording to stop");
+      }
+    }
+
+    // Event listeners
+    startRecordingBtn.addEventListener("click", startRecording);
+    stopRecordingBtn.addEventListener("click", stopRecording);
+
+    // Download recording
+    downloadRecordingBtn.addEventListener("click", () => {
+      const url = previewVideo.src;
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `reaction-video-${timestamp}.webm`;
+      
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      updateStatus("Recording downloaded successfully!", "ready");
+    });
+
+    // Discard recording
+    discardRecordingBtn.addEventListener("click", () => {
+      previewContainer.classList.add("hidden");
+      previewVideo.src = "";
+      recordedChunks = [];
+      updateStatus("Recording discarded. Ready for new recording.", "ready");
+    });
+
+    // Window resize handler
+    window.addEventListener('resize', () => {
+      constrainPosition(reactionOverlay, videoPlayer);
+    });
+
+    // Initialize
+    updateStatus("Upload a video and enable camera to begin recording", "ready");
+
+    // Prevent context menu on long press
+    document.addEventListener('contextmenu', (e) => {
+      if (e.target === reactionOverlay) {
+        e.preventDefault();
+      }
+    });
+
+    // Handle orientation change on mobile
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        constrainPosition(reactionOverlay, videoPlayer);
+      }, 500);
+    });
+
+    console.log("Professional Video Recorder initialized successfully!");
   </script>
 </body>
 </html>

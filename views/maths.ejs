@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maths – LaTeX Renderer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- KaTeX CSS/JS for fast client-side LaTeX rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <!-- Plotly for graphing and Math.js for function evaluation -->
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@11.11.0/lib/browser/math.js"></script>
+  <style>
+    .gradient-bg { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); }
+    textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <%- include('partials/navbar') %>
+
+  <header class="gradient-bg text-white py-16">
+    <div class="container mx-auto px-4">
+      <h1 class="text-4xl font-bold">Maths – LaTeX Renderer</h1>
+      <p class="opacity-90 mt-2">Post a question using LaTeX. It will render below.</p>
+    </div>
+  </header>
+
+  <main class="py-10">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <% if (error) { %>
+        <div class="mb-4 p-3 rounded border border-red-300 bg-red-50 text-red-800"><%= error %></div>
+      <% } %>
+
+      <form method="POST" action="/maths" class="bg-white rounded-xl shadow p-6 space-y-4">
+        <div>
+          <label for="latex" class="block text-sm font-medium text-gray-700 mb-1">LaTeX</label>
+          <textarea id="latex" name="latex" rows="5" placeholder="e.g.\\int_0^1 x^2 \\mathrm{d}x" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"><%= latex %></textarea>
+          <p class="text-xs text-gray-500 mt-1">Use standard LaTeX math. Inline: $ ... $. Display: $$ ... $$. If you omit delimiters (e.g., \\textbf{...}), we will auto-render it.</p>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="text-xs text-gray-500">Tip: try <code>$$\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}$$</code></div>
+          <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700">Render</button>
+        </div>
+      </form>
+
+      <section class="mt-10">
+        <h2 class="text-2xl font-semibold mb-3">Rendered Output</h2>
+        <div id="renderTarget" class="bg-white rounded-xl shadow p-6 min-h-[100px]">
+          <% if (latex) { %>
+            <div id="mathContent"><%= latex %></div>
+          <% } else { %>
+            <p class="text-gray-500">Your rendered LaTeX will appear here after you submit.</p>
+          <% } %>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">Tip: Full LaTeX documents are supported by stripping the preamble and rendering the body. If you pasted a document with <code>\\documentclass</code>, we convert its body for display rendering.</p>
+      </section>
+
+      <section class="mt-12">
+        <h2 class="text-2xl font-semibold mb-3">Graphing & Function Tools</h2>
+        <div class="bg-white rounded-xl shadow p-6 space-y-6">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-semibold mb-2">Compute f(x)</h3>
+              <div class="space-y-3">
+                <label class="block text-sm">Function f(x)</label>
+                <input id="fx-input" type="text" placeholder="e.g. sqrt(x^2 + 1)" class="w-full border rounded-lg px-3 py-2" />
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-sm">x</label>
+                    <input id="x-input" type="number" step="any" value="0" class="w-full border rounded-lg px-3 py-2" />
+                  </div>
+                  <div>
+                    <label class="block text-sm">Result</label>
+                    <input id="fx-result" type="text" readonly class="w-full border rounded-lg px-3 py-2 bg-gray-50" />
+                  </div>
+                </div>
+                <button id="btn-eval" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Compute</button>
+                <p id="eval-error" class="text-sm text-red-600"></p>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-2">Plot Function</h3>
+              <div class="space-y-3">
+                <label class="block text-sm">Function f(x)</label>
+                <input id="plot-fx" type="text" placeholder="e.g. sin(x) + 0.2*x" class="w-full border rounded-lg px-3 py-2" />
+                <div class="grid grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-sm">x min</label>
+                    <input id="x-min" type="number" step="any" value="-10" class="w-full border rounded-lg px-3 py-2" />
+                  </div>
+                  <div>
+                    <label class="block text-sm">x max</label>
+                    <input id="x-max" type="number" step="any" value="10" class="w-full border rounded-lg px-3 py-2" />
+                  </div>
+                  <div>
+                    <label class="block text-sm">Samples</label>
+                    <input id="samples" type="number" value="400" class="w-full border rounded-lg px-3 py-2" />
+                  </div>
+                </div>
+                <button id="btn-plot" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Plot f(x)</button>
+                <p id="plot-error" class="text-sm text-red-600"></p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold mb-2">Plot Points</h3>
+            <p class="text-xs text-gray-500 mb-2">Enter points as x,y per line. Example: 0,1</p>
+            <textarea id="points-input" rows="4" class="w-full border rounded-lg px-3 py-2" placeholder="-1,2\n0,0\n1,3"></textarea>
+            <div class="mt-3 flex gap-3">
+              <button id="btn-points" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Plot Points</button>
+              <button id="btn-clear" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">Clear Graph</button>
+            </div>
+            <p id="points-error" class="text-sm text-red-600 mt-2"></p>
+          </div>
+
+          <div id="graph" class="w-full h-[420px]"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      try {
+        const el = document.getElementById('mathContent');
+        if (el) {
+          let raw = el.textContent || '';
+          // Handle full LaTeX documents: strip preamble and document env
+          const hasPreamble = /\\documentclass[\s\S]*?\\begin\{document\}/.test(raw);
+          if (hasPreamble) {
+            // Remove preamble up to \begin{document}
+            raw = raw.replace(/^[\s\S]*?\\begin\{document\}/, '');
+            // Remove \end{document}
+            raw = raw.replace(/\\end\{document\}[\s\S]*$/, '');
+          }
+          raw = raw.trim();
+
+          // Split into paragraphs by blank lines
+          const paragraphs = raw.split(/\n\s*\n/).map(p => p.replace(/\s+$/,'').replace(/^\s+/,'')).filter(Boolean);
+          // Clear current content
+          el.textContent = '';
+          const hasDelimiters = (p) => /[\$]|\\\(|\\\[|\\begin\{(align\*?|equation\*?|gather\*?|multline\*?|cases)\}/.test(p);
+          const looksLikeMath = (p) => /(\\frac|\\sqrt|\\sum|\\int|\\prod|\\alpha|\\beta|\\gamma|\\delta|\\pi|\\leq|\\geq|\\neq|\\cdot|\\times|\\pm|\\to|\\rightarrow|\\boxed|\\Delta|\^|_|=|\+|-)/.test(p);
+          if (paragraphs.length === 0 && raw) {
+            paragraphs.push(raw);
+          }
+          paragraphs.forEach(p => {
+            if (hasDelimiters(p)) {
+              // Already delimited/environments; add as-is
+              const div = document.createElement('div');
+              div.className = 'my-2';
+              div.textContent = p;
+              el.appendChild(div);
+            } else if (looksLikeMath(p)) {
+              const div = document.createElement('div');
+              div.className = 'my-2';
+              // Put as display math
+              div.textContent = `$$\n${p}\n$$`;
+              el.appendChild(div);
+            } else {
+              const para = document.createElement('p');
+              para.className = 'my-2';
+              para.textContent = p;
+              el.appendChild(para);
+            }
+          });
+
+          renderMathInElement(el, {
+            delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+            ],
+            throwOnError: false
+          });
+        }
+      } catch (e) {
+        console.warn('KaTeX render error:', e);
+      }
+
+      // Graphing and function tools
+      const $ = (id) => document.getElementById(id);
+      const graphEl = $('graph');
+      if (graphEl && window.Plotly && window.math) {
+        // Initialize empty plot
+        const layout = {
+          margin: { t: 20, r: 20, b: 40, l: 50 },
+          xaxis: { title: 'x', zeroline: true },
+          yaxis: { title: 'y', zeroline: true },
+          showlegend: true
+        };
+        Plotly.newPlot(graphEl, [], layout, {responsive: true});
+
+        function setError(id, msg) {
+          const el = $(id);
+          if (el) el.textContent = msg || '';
+        }
+
+        function computeFx() {
+          setError('eval-error', '');
+          try {
+            const expr = $('fx-input').value.trim();
+            const xVal = parseFloat($('x-input').value);
+            if (!expr) throw new Error('Enter a function for f(x).');
+            const node = math.parse(expr);
+            const code = node.compile();
+            const y = code.evaluate({ x: xVal, pi: Math.PI, e: Math.E });
+            $('fx-result').value = String(y);
+          } catch (e) {
+            $('fx-result').value = '';
+            setError('eval-error', e.message || 'Evaluation error');
+          }
+        }
+
+        function linspace(a, b, n) {
+          const arr = new Array(n);
+          const step = (b - a) / (n - 1);
+          for (let i = 0; i < n; i++) arr[i] = a + i * step;
+          return arr;
+        }
+
+        function plotFx() {
+          setError('plot-error', '');
+          try {
+            const expr = $('plot-fx').value.trim();
+            if (!expr) throw new Error('Enter a function to plot.');
+            const xmin = parseFloat($('x-min').value);
+            const xmax = parseFloat($('x-max').value);
+            let n = parseInt($('samples').value, 10);
+            if (!(n > 4 && n <= 5000)) n = 400;
+            if (!(xmax > xmin)) throw new Error('x max must be greater than x min.');
+
+            const node = math.parse(expr);
+            const code = node.compile();
+            const xs = linspace(xmin, xmax, n);
+            const ys = xs.map(x => {
+              try { return code.evaluate({ x }); } catch { return NaN; }
+            });
+            const trace = {
+              x: xs, y: ys, mode: 'lines', type: 'scatter', name: `f(x) = ${expr}`,
+              line: { color: '#2563eb' }
+            };
+            Plotly.react(graphEl, [trace], layout, {responsive: true});
+          } catch (e) {
+            setError('plot-error', e.message || 'Plot error');
+          }
+        }
+
+        function plotPoints() {
+          setError('points-error', '');
+          try {
+            const text = $('points-input').value.trim();
+            if (!text) throw new Error('Enter at least one point as x,y');
+            const lines = text.split(/\n+/);
+            const xs = [], ys = [];
+            for (const line of lines) {
+              const m = line.split(',');
+              if (m.length !== 2) continue;
+              const x = parseFloat(m[0]);
+              const y = parseFloat(m[1]);
+              if (Number.isFinite(x) && Number.isFinite(y)) {
+                xs.push(x); ys.push(y);
+              }
+            }
+            if (xs.length === 0) throw new Error('No valid points found. Use lines like: 0,1');
+            const scatter = { x: xs, y: ys, mode: 'markers', type: 'scatter', name: 'points', marker: { color: '#dc2626', size: 8 } };
+            // Add to existing plot (do not erase function)
+            Plotly.addTraces(graphEl, [scatter]);
+          } catch (e) {
+            setError('points-error', e.message || 'Points plot error');
+          }
+        }
+
+        function clearGraph() {
+          Plotly.react(graphEl, [], layout, {responsive: true});
+          setError('plot-error', '');
+          setError('points-error', '');
+        }
+
+        const btnEval = $('btn-eval');
+        const btnPlot = $('btn-plot');
+        const btnPoints = $('btn-points');
+        const btnClear = $('btn-clear');
+        if (btnEval) btnEval.addEventListener('click', computeFx);
+        if (btnPlot) btnPlot.addEventListener('click', plotFx);
+        if (btnPoints) btnPoints.addEventListener('click', plotPoints);
+        if (btnClear) btnClear.addEventListener('click', clearGraph);
+      }
+    });
+  </script>
+</body>
+</html>

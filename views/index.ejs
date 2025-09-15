@@ -37,6 +37,84 @@
       text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
     
+    /* Video Source Selection */
+    .video-source-section {
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+    }
+    
+    .source-selector {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .source-option {
+      flex: 1;
+      min-width: 200px;
+      max-width: 250px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid transparent;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+    
+    .source-option:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+    }
+    
+    .source-option.active {
+      border-color: #4CAF50;
+      background: rgba(76, 175, 80, 0.2);
+    }
+    
+    .source-option h4 {
+      margin: 0 0 10px 0;
+      font-size: 1.2rem;
+    }
+    
+    .source-option p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    /* Camera/Video Source Selection */
+    .camera-selector {
+      margin: 20px 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      backdrop-filter: blur(5px);
+    }
+    
+    .camera-selector select {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+      margin: 10px 0;
+    }
+    
+    .camera-selector select option {
+      background: #333;
+      color: white;
+    }
+    
     /* Video container - responsive */
     #videoContainer { 
       position: relative; 
@@ -114,6 +192,12 @@
     .upload-label:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(238, 90, 36, 0.6);
+    }
+    
+    .upload-label.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
     }
 
     /* Audio controls - responsive */
@@ -294,6 +378,15 @@
         padding: 10px;
       }
       
+      .source-selector {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .source-option {
+        min-width: 90%;
+      }
+      
       #reactionOverlay {
         width: 120px;
         height: 120px;
@@ -339,10 +432,34 @@
   <div class="container">
     <h2>🎥 Professional Video Reaction Recorder</h2>
 
-    <!-- Upload video -->
-    <div class="file-upload-container">
-      <input type="file" id="uploadVideo" accept="video/*" />
-      <label for="uploadVideo" class="upload-label">📹 Upload Video File</label>
+    <!-- Video Source Selection -->
+    <div class="video-source-section">
+      <h3>📹 Select Video Source</h3>
+      <div class="source-selector">
+        <div class="source-option" id="fileSourceOption">
+          <h4>📁 Upload File</h4>
+          <p>Upload a video file from your device</p>
+        </div>
+        <div class="source-option" id="cameraSourceOption">
+          <h4>📹 Camera/Phone</h4>
+          <p>Use camera or phone via Iriun Webcam</p>
+        </div>
+      </div>
+
+      <!-- File Upload (shown when file source is selected) -->
+      <div class="file-upload-container" id="fileUploadSection" style="display: none;">
+        <input type="file" id="uploadVideo" accept="video/*" />
+        <label for="uploadVideo" class="upload-label">📹 Choose Video File</label>
+      </div>
+
+      <!-- Camera/Video Input Selector -->
+      <div class="camera-selector" id="videoInputSection" style="display: none;">
+        <h4>📹 Select Video Input</h4>
+        <select id="videoInputSelect">
+          <option value="">Choose video input...</option>
+        </select>
+        <button id="refreshInputs">🔄 Refresh Inputs</button>
+      </div>
     </div>
 
     <!-- Quality settings -->
@@ -381,7 +498,7 @@
 
     <!-- Status indicator -->
     <div id="statusIndicator" class="status-indicator">
-      <strong>Status:</strong> <span id="statusText">Ready to start</span>
+      <strong>Status:</strong> <span id="statusText">Select a video source to begin</span>
     </div>
 
     <div id="videoContainer">
@@ -430,6 +547,14 @@
     const frameRate = document.getElementById("frameRate");
     const mainControls = document.getElementById("mainControls");
 
+    // Video source elements
+    const fileSourceOption = document.getElementById("fileSourceOption");
+    const cameraSourceOption = document.getElementById("cameraSourceOption");
+    const fileUploadSection = document.getElementById("fileUploadSection");
+    const videoInputSection = document.getElementById("videoInputSection");
+    const videoInputSelect = document.getElementById("videoInputSelect");
+    const refreshInputsBtn = document.getElementById("refreshInputs");
+
     // Global variables
     let cameraStream = null;
     let currentFacing = "user";
@@ -447,6 +572,8 @@
     let startY = 0;
     let initialDistance = 0;
     let initialSize = 150;
+    let selectedVideoSource = null; // 'file' or 'camera'
+    let availableVideoInputs = [];
 
     // Update status function
     function updateStatus(message, type = 'ready') {
@@ -454,39 +581,123 @@
       statusIndicator.className = `status-indicator show ${type}`;
     }
 
-    // Volume control handlers
-    videoVolumeSlider.addEventListener('input', () => {
-      const value = Math.round(videoVolumeSlider.value * 100);
-      videoVolumeValue.textContent = `${value}%`;
-      videoPlayer.volume = videoVolumeSlider.value;
-      if (videoAudioGain) videoAudioGain.gain.value = videoVolumeSlider.value;
+    // Video source selection handlers
+    fileSourceOption.addEventListener('click', () => {
+      selectVideoSource('file');
     });
 
-    cameraVolumeSlider.addEventListener('input', () => {
-      const value = Math.round(cameraVolumeSlider.value * 100);
-      cameraVolumeValue.textContent = `${value}%`;
-      if (cameraAudioGain) cameraAudioGain.gain.value = cameraVolumeSlider.value;
+    cameraSourceOption.addEventListener('click', () => {
+      selectVideoSource('camera');
     });
 
-    // File upload handler
-    document.getElementById("uploadVideo").addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file && file.type.startsWith("video/")) {
-        updateStatus("Loading video...", "recording");
+    function selectVideoSource(source) {
+      selectedVideoSource = source;
+      
+      // Update UI
+      document.querySelectorAll('.source-option').forEach(el => el.classList.remove('active'));
+      
+      if (source === 'file') {
+        fileSourceOption.classList.add('active');
+        fileUploadSection.style.display = 'block';
+        videoInputSection.style.display = 'none';
+        updateStatus('Upload a video file to continue', 'ready');
         
-        const videoUrl = URL.createObjectURL(file);
-        videoPlayer.src = videoUrl;
-        videoPlayer.load();
+        // Stop any existing camera stream
+        if (cameraStream) {
+          cameraStream.getTracks().forEach(t => t.stop());
+          cameraStream = null;
+        }
+        videoPlayer.srcObject = null;
+        
+      } else if (source === 'camera') {
+        cameraSourceOption.classList.add('active');
+        fileUploadSection.style.display = 'none';
+        videoInputSection.style.display = 'block';
+        updateStatus('Select a video input source', 'ready');
+        
+        // Clear file source
+        videoPlayer.src = '';
+        document.getElementById('uploadVideo').value = '';
+        
+        // Load available video inputs
+        loadVideoInputs();
+      }
+    }
+
+    // Load available video inputs
+    async function loadVideoInputs() {
+      try {
+        // Request permission first
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream.getTracks().forEach(track => track.stop());
+        
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputs = devices.filter(device => device.kind === 'videoinput');
+        
+        availableVideoInputs = videoInputs;
+        
+        videoInputSelect.innerHTML = '<option value="">Choose video input...</option>';
+        
+        videoInputs.forEach((device, index) => {
+          const option = document.createElement('option');
+          option.value = device.deviceId;
+          option.textContent = device.label || `Camera ${index + 1}`;
+          videoInputSelect.appendChild(option);
+        });
+        
+        updateStatus(`Found ${videoInputs.length} video input(s)`, 'ready');
+        
+      } catch (error) {
+        console.error('Error loading video inputs:', error);
+        updateStatus('Unable to access video devices', 'recording');
+      }
+    }
+
+    // Refresh video inputs
+    refreshInputsBtn.addEventListener('click', loadVideoInputs);
+
+    // Video input selection handler
+    videoInputSelect.addEventListener('change', async (e) => {
+      const deviceId = e.target.value;
+      if (!deviceId) return;
+      
+      updateStatus('Starting video input...', 'recording');
+      
+      try {
+        // Stop existing stream
+        if (cameraStream) {
+          cameraStream.getTracks().forEach(t => t.stop());
+        }
+        
+        // Start new stream with selected device
+        const constraints = {
+          video: {
+            deviceId: { exact: deviceId },
+            width: { ideal: 1920, min: 640 },
+            height: { ideal: 1080, min: 480 },
+            frameRate: { ideal: 30 }
+          }
+        };
+        
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        videoPlayer.srcObject = stream;
+        cameraStream = stream;
+        
+        // Setup canvas for recording
+        videoPlayer.addEventListener('loadedmetadata', setupCanvasForCamera, { once: true });
         
         pauseVideoBtn.classList.remove("hidden");
-        updateStatus("Video loaded! Enable camera to continue.", "ready");
-      } else {
-        alert("Please select a valid video file.");
+        updateStatus('Video input ready! Enable camera for overlay.', 'ready');
+        
+      } catch (error) {
+        console.error('Error starting video input:', error);
+        updateStatus('Failed to start video input', 'recording');
+        alert('Failed to start video input. Please check your camera connection.');
       }
     });
 
-    // Video loaded handler
-    videoPlayer.addEventListener("loadedmetadata", () => {
+    // Setup canvas for camera input
+    function setupCanvasForCamera() {
       const quality = videoQuality.value;
       let width, height;
       
@@ -518,16 +729,89 @@
       container.style.aspectRatio = `${aspectRatio}`;
       
       console.log(`Canvas: ${width}x${height}, Aspect: ${aspectRatio}`);
-      updateStatus(`Video ready (${width}x${height})`, "ready");
+      updateStatus(`Video input ready (${width}x${height})`, "ready");
+    }
+
+    // Volume control handlers
+    videoVolumeSlider.addEventListener('input', () => {
+      const value = Math.round(videoVolumeSlider.value * 100);
+      videoVolumeValue.textContent = `${value}%`;
+      videoPlayer.volume = videoVolumeSlider.value;
+      if (videoAudioGain) videoAudioGain.gain.value = videoVolumeSlider.value;
     });
 
-    // Camera functions
+    cameraVolumeSlider.addEventListener('input', () => {
+      const value = Math.round(cameraVolumeSlider.value * 100);
+      cameraVolumeValue.textContent = `${value}%`;
+      if (cameraAudioGain) cameraAudioGain.gain.value = cameraVolumeSlider.value;
+    });
+
+    // File upload handler (only works when file source is selected)
+    document.getElementById("uploadVideo").addEventListener("change", (e) => {
+      if (selectedVideoSource !== 'file') return;
+      
+      const file = e.target.files[0];
+      if (file && file.type.startsWith("video/")) {
+        updateStatus("Loading video...", "recording");
+        
+        const videoUrl = URL.createObjectURL(file);
+        videoPlayer.src = videoUrl;
+        videoPlayer.srcObject = null; // Clear any camera stream
+        videoPlayer.load();
+        
+        pauseVideoBtn.classList.remove("hidden");
+        updateStatus("Video loaded! Enable camera to continue.", "ready");
+      } else {
+        alert("Please select a valid video file.");
+      }
+    });
+
+    // Video loaded handler
+    videoPlayer.addEventListener("loadedmetadata", () => {
+      if (selectedVideoSource === 'file') {
+        const quality = videoQuality.value;
+        let width, height;
+        
+        const aspectRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
+        
+        switch(quality) {
+          case '1080p':
+            height = 1080;
+            width = Math.round(height * aspectRatio);
+            break;
+          case '720p':
+            height = 720;
+            width = Math.round(height * aspectRatio);
+            break;
+          case '480p':
+            height = 480;
+            width = Math.round(height * aspectRatio);
+            break;
+          default:
+            width = videoPlayer.videoWidth;
+            height = videoPlayer.videoHeight;
+        }
+        
+        canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        
+        const container = document.getElementById('videoContainer');
+        container.style.aspectRatio = `${aspectRatio}`;
+        
+        console.log(`Canvas: ${width}x${height}, Aspect: ${aspectRatio}`);
+        updateStatus(`Video ready (${width}x${height})`, "ready");
+      }
+    });
+
+    // Camera functions (for reaction overlay)
     async function startCamera() {
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(t => t.stop());
+      if (reactionOverlay.srcObject) {
+        const stream = reactionOverlay.srcObject;
+        stream.getTracks().forEach(t => t.stop());
       }
       
-      updateStatus("Starting camera...", "recording");
+      updateStatus("Starting reaction camera...", "recording");
       
       try {
         const constraints = {
@@ -545,16 +829,16 @@
           }
         };
         
-        cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-        reactionOverlay.srcObject = cameraStream;
+        const reactionStream = await navigator.mediaDevices.getUserMedia(constraints);
+        reactionOverlay.srcObject = reactionStream;
         
         startCameraBtn.textContent = "✅ Camera Ready";
         startCameraBtn.disabled = true;
-        updateStatus("Camera ready! You can now record.", "ready");
+        updateStatus("Reaction camera ready! You can now record.", "ready");
       } catch (err) {
         console.error("Camera error:", err);
         updateStatus("Camera access failed", "recording");
-        alert("Please allow camera and microphone access to continue.");
+        alert("Please allow camera and microphone access for reaction overlay.");
       }
     }
 
@@ -588,7 +872,7 @@
       mainControls.classList.remove('playing');
     });
 
-    // Touch and drag functionality for overlay
+    // Touch and drag functionality for overlay (same as before)
     function getTouchDistance(touch1, touch2) {
       const dx = touch1.clientX - touch2.clientX;
       const dy = touch1.clientY - touch2.clientY;
@@ -717,15 +1001,21 @@
       console.log("Starting recording...");
       
       // Validation
-      if (!cameraStream) {
-        alert("Please enable camera first");
-        updateStatus("Camera required", "recording");
+      if (!reactionOverlay.srcObject) {
+        alert("Please enable reaction camera first");
+        updateStatus("Reaction camera required", "recording");
         return;
       }
       
-      if (!videoPlayer.src) {
+      if (selectedVideoSource === 'file' && !videoPlayer.src) {
         alert("Please upload a video first");
         updateStatus("Video required", "recording");
+        return;
+      }
+      
+      if (selectedVideoSource === 'camera' && !videoPlayer.srcObject) {
+        alert("Please select a video input source first");
+        updateStatus("Video input required", "recording");
         return;
       }
       
@@ -813,8 +1103,17 @@
         // Audio setup
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
-        const videoSource = audioContext.createMediaElementSource(videoPlayer);
-        const cameraSource = audioContext.createMediaStreamSource(cameraStream);
+        let videoSource, cameraSource;
+        
+        // Handle different video sources
+        if (selectedVideoSource === 'file' && videoPlayer.src) {
+          videoSource = audioContext.createMediaElementSource(videoPlayer);
+        } else if (selectedVideoSource === 'camera' && videoPlayer.srcObject) {
+          videoSource = audioContext.createMediaStreamSource(videoPlayer.srcObject);
+        }
+        
+        // Reaction camera audio
+        cameraSource = audioContext.createMediaStreamSource(reactionOverlay.srcObject);
         
         videoAudioGain = audioContext.createGain();
         cameraAudioGain = audioContext.createGain();
@@ -831,9 +1130,11 @@
         
         mixedAudio = audioContext.createMediaStreamDestination();
         
-        videoSource.connect(videoAudioGain);
+        if (videoSource) {
+          videoSource.connect(videoAudioGain);
+          videoAudioGain.connect(compressor);
+        }
         cameraSource.connect(cameraAudioGain);
-        videoAudioGain.connect(compressor);
         cameraAudioGain.connect(compressor);
         compressor.connect(mixedAudio);
         
@@ -909,7 +1210,9 @@
 
         // Start recording
         isRecording = true;
-        videoPlayer.play();
+        if (selectedVideoSource === 'file') {
+          videoPlayer.play();
+        }
         mediaRecorder.start(100);
         drawFrame();
         
@@ -976,7 +1279,7 @@
     });
 
     // Initialize
-    updateStatus("Upload a video and enable camera to begin recording", "ready");
+    updateStatus("Select a video source to begin", "ready");
 
     // Prevent context menu on long press
     document.addEventListener('contextmenu', (e) => {
@@ -992,7 +1295,7 @@
       }, 500);
     });
 
-    console.log("Professional Video Recorder initialized successfully!");
+    console.log("Professional Video Recorder with source selection initialized successfully!");
   </script>
 </body>
 </html>

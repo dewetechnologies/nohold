@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>🎥 Professional Video Reaction Recorder</title>
   <style>
-    /* CSS remains largely the same with minor improvements */
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -139,17 +138,19 @@
       touch-action: none;
     }
     
-    /* Camera overlay - improved for mobile */
+    /* Camera overlay - improved for mobile with gradient yellow outline */
     #reactionOverlay {
       position: absolute;
       left: 20px;
       top: 20px;
       width: 150px;
       height: 150px;
-      border: 3px solid #ff6b6b;
+      border: 3px solid transparent;
       border-radius: 50%;
+      background: linear-gradient(white, white) padding-box,
+                  linear-gradient(to right, #ffcc00, #ff9900, #ff6600) border-box;
       object-fit: cover;
-      background: #000;
+      background-color: #000;
       z-index: 10;
       box-shadow: 0 8px 25px rgba(0,0,0,0.4);
       cursor: grab;
@@ -163,7 +164,6 @@
     }
     
     #reactionOverlay.resizing {
-      border-color: #4CAF50;
       border-width: 4px;
     }
 
@@ -282,13 +282,6 @@
       justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    
-    .controls.playing {
-      opacity: 0;
-      transform: translateY(-20px);
-      pointer-events: none;
     }
     
     button {
@@ -354,11 +347,6 @@
       background: rgba(46, 213, 115, 0.2);
       border: 2px solid #2ed573;
     }
-    
-    .status-indicator.error {
-      background: rgba(255, 71, 87, 0.2);
-      border: 2px solid #ff4757;
-    }
 
     /* Preview container */
     #previewContainer { 
@@ -378,50 +366,16 @@
     
     .hidden { display: none !important; }
     
-    /* Help tooltip */
-    .help-tooltip {
-      position: relative;
-      display: inline-block;
-      margin-left: 8px;
-      cursor: help;
+    /* Recording timer */
+    .recording-timer {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 10px 0;
+      display: none;
     }
     
-    .help-tooltip .tooltip-text {
-      visibility: hidden;
-      width: 200px;
-      background-color: rgba(0, 0, 0, 0.8);
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
-      padding: 8px;
-      position: absolute;
-      z-index: 100;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0;
-      transition: opacity 0.3s;
-      font-size: 0.8rem;
-    }
-    
-    .help-tooltip:hover .tooltip-text {
-      visibility: visible;
-      opacity: 1;
-    }
-    
-    /* Loading spinner */
-    .spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top-color: #fff;
-      animation: spin 1s ease-in-out infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .recording-timer.show {
+      display: block;
     }
     
     /* Responsive adjustments */
@@ -502,9 +456,6 @@
       <div class="file-upload-container" id="fileUploadSection" style="display: none;">
         <input type="file" id="uploadVideo" accept="video/*" />
         <label for="uploadVideo" class="upload-label">📹 Choose Video File</label>
-        <div class="help-tooltip">❓
-          <span class="tooltip-text">Supported formats: MP4, WebM, MOV. Max file size: 100MB</span>
-        </div>
       </div>
 
       <!-- Camera/Video Input Selector -->
@@ -514,9 +465,6 @@
           <option value="">Choose video input...</option>
         </select>
         <button id="refreshInputs">🔄 Refresh Inputs</button>
-        <div class="help-tooltip">❓
-          <span class="tooltip-text">If using a phone as webcam, install Iriun Webcam app first</span>
-        </div>
       </div>
     </div>
 
@@ -559,6 +507,11 @@
       <strong>Status:</strong> <span id="statusText">Select a video source to begin</span>
     </div>
 
+    <!-- Recording timer -->
+    <div id="recordingTimer" class="recording-timer">
+      ⏱️ Recording: <span id="timerDisplay">00:00</span>
+    </div>
+
     <div id="videoContainer">
       <video id="videoPlayer" crossorigin="anonymous" playsinline></video>
       <video id="reactionOverlay" autoplay muted playsinline></video>
@@ -578,7 +531,6 @@
       <div class="controls">
         <button id="downloadRecording">💾 Download</button>
         <button id="discardRecording">🗑️ Try Again</button>
-        <button id="shareRecording" style="display:none">📤 Share</button>
       </div>
     </div>
   </div>
@@ -596,7 +548,6 @@
     const previewVideo = document.getElementById("previewVideo");
     const downloadRecordingBtn = document.getElementById("downloadRecording");
     const discardRecordingBtn = document.getElementById("discardRecording");
-    const shareRecordingBtn = document.getElementById("shareRecording");
     const statusIndicator = document.getElementById("statusIndicator");
     const statusText = document.getElementById("statusText");
     const videoVolumeSlider = document.getElementById("videoVolume");
@@ -606,6 +557,8 @@
     const videoQuality = document.getElementById("videoQuality");
     const frameRate = document.getElementById("frameRate");
     const mainControls = document.getElementById("mainControls");
+    const recordingTimer = document.getElementById("recordingTimer");
+    const timerDisplay = document.getElementById("timerDisplay");
 
     // Video source elements
     const fileSourceOption = document.getElementById("fileSourceOption");
@@ -635,21 +588,24 @@
     let selectedVideoSource = null; // 'file' or 'camera'
     let availableVideoInputs = [];
     let recordingStartTime = 0;
-    let recordingTimer = null;
+    let timerInterval = null;
+    let isVideoPaused = false;
 
     // Update status function
     function updateStatus(message, type = 'ready') {
       statusText.textContent = message;
       statusIndicator.className = `status-indicator show ${type}`;
-      
-      // Add timestamp for debugging
-      console.log(`[${new Date().toLocaleTimeString()}] ${type.toUpperCase()}: ${message}`);
     }
 
-    // Show error message with details
-    function showError(message, error = null) {
-      updateStatus(`${message} ${error ? `(${error.message})` : ''}`, 'error');
-      console.error(message, error);
+    // Update timer function
+    function updateTimer() {
+      if (!isRecording) return;
+      
+      const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      
+      timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
     // Video source selection handlers
@@ -674,7 +630,10 @@
         updateStatus('Upload a video file to continue', 'ready');
         
         // Stop any existing camera stream
-        stopCameraStream();
+        if (cameraStream) {
+          cameraStream.getTracks().forEach(t => t.stop());
+          cameraStream = null;
+        }
         videoPlayer.srcObject = null;
         
       } else if (source === 'camera') {
@@ -692,22 +651,9 @@
       }
     }
 
-    // Stop camera stream properly
-    function stopCameraStream() {
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(t => {
-          t.stop();
-          t.enabled = false;
-        });
-        cameraStream = null;
-      }
-    }
-
     // Load available video inputs
     async function loadVideoInputs() {
       try {
-        updateStatus('Searching for video inputs...', 'recording');
-        
         // Request permission first
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         stream.getTracks().forEach(track => track.stop());
@@ -719,12 +665,6 @@
         
         videoInputSelect.innerHTML = '<option value="">Choose video input...</option>';
         
-        if (videoInputs.length === 0) {
-          updateStatus('No video inputs found', 'error');
-          videoInputSelect.innerHTML = '<option value="">No cameras detected</option>';
-          return;
-        }
-        
         videoInputs.forEach((device, index) => {
           const option = document.createElement('option');
           option.value = device.deviceId;
@@ -735,7 +675,8 @@
         updateStatus(`Found ${videoInputs.length} video input(s)`, 'ready');
         
       } catch (error) {
-        showError('Unable to access video devices', error);
+        console.error('Error loading video inputs:', error);
+        updateStatus('Unable to access video devices', 'recording');
       }
     }
 
@@ -751,7 +692,9 @@
       
       try {
         // Stop existing stream
-        stopCameraStream();
+        if (cameraStream) {
+          cameraStream.getTracks().forEach(t => t.stop());
+        }
         
         // Start new stream with selected device
         const constraints = {
@@ -774,14 +717,85 @@
         updateStatus('Video input ready! Enable camera for overlay.', 'ready');
         
       } catch (error) {
-        showError('Failed to start video input', error);
+        console.error('Error starting video input:', error);
+        updateStatus('Failed to start video input', 'recording');
         alert('Failed to start video input. Please check your camera connection.');
       }
     });
 
     // Setup canvas for camera input
     function setupCanvasForCamera() {
-      try {
+      const quality = videoQuality.value;
+      let width, height;
+      
+      const aspectRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
+      
+      switch(quality) {
+        case '1080p':
+          height = 1080;
+          width = Math.round(height * aspectRatio);
+          break;
+        case '720p':
+          height = 720;
+          width = Math.round(height * aspectRatio);
+          break;
+        case '480p':
+          height = 480;
+          width = Math.round(height * aspectRatio);
+          break;
+        default:
+          width = videoPlayer.videoWidth;
+          height = videoPlayer.videoHeight;
+      }
+      
+      canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      
+      const container = document.getElementById('videoContainer');
+      container.style.aspectRatio = `${aspectRatio}`;
+      
+      console.log(`Canvas: ${width}x${height}, Aspect: ${aspectRatio}`);
+      updateStatus(`Video input ready (${width}x${height})`, "ready");
+    }
+
+    // Volume control handlers
+    videoVolumeSlider.addEventListener('input', () => {
+      const value = Math.round(videoVolumeSlider.value * 100);
+      videoVolumeValue.textContent = `${value}%`;
+      videoPlayer.volume = videoVolumeSlider.value;
+      if (videoAudioGain) videoAudioGain.gain.value = videoVolumeSlider.value;
+    });
+
+    cameraVolumeSlider.addEventListener('input', () => {
+      const value = Math.round(cameraVolumeSlider.value * 100);
+      cameraVolumeValue.textContent = `${value}%`;
+      if (cameraAudioGain) cameraAudioGain.gain.value = cameraVolumeSlider.value;
+    });
+
+    // File upload handler (only works when file source is selected)
+    document.getElementById("uploadVideo").addEventListener("change", (e) => {
+      if (selectedVideoSource !== 'file') return;
+      
+      const file = e.target.files[0];
+      if (file && file.type.startsWith("video/")) {
+        updateStatus("Loading video...", "recording");
+        
+        const videoUrl = URL.createObjectURL(file);
+        videoPlayer.src = videoUrl;
+        videoPlayer.srcObject = null; // Clear any camera stream
+        videoPlayer.load();
+        
+        pauseVideoBtn.classList.remove("hidden");
+        updateStatus("Video loaded! Enable camera to continue.", "ready");
+      } else {
+        alert("Please select a valid video file.");
+      }
+    });
+
+    // Video loaded handler
+    videoPlayer.addEventListener("loadedmetadata", () => {
+      if (selectedVideoSource === 'file') {
         const quality = videoQuality.value;
         let width, height;
         
@@ -813,95 +827,7 @@
         container.style.aspectRatio = `${aspectRatio}`;
         
         console.log(`Canvas: ${width}x${height}, Aspect: ${aspectRatio}`);
-        updateStatus(`Video input ready (${width}x${height})`, "ready");
-      } catch (error) {
-        showError('Error setting up canvas', error);
-      }
-    }
-
-    // Volume control handlers
-    videoVolumeSlider.addEventListener('input', () => {
-      const value = Math.round(videoVolumeSlider.value * 100);
-      videoVolumeValue.textContent = `${value}%`;
-      videoPlayer.volume = videoVolumeSlider.value;
-      if (videoAudioGain) videoAudioGain.gain.value = videoVolumeSlider.value;
-    });
-
-    cameraVolumeSlider.addEventListener('input', () => {
-      const value = Math.round(cameraVolumeSlider.value * 100);
-      cameraVolumeValue.textContent = `${value}%`;
-      if (cameraAudioGain) cameraAudioGain.gain.value = cameraVolumeSlider.value;
-    });
-
-    // File upload handler (only works when file source is selected)
-    document.getElementById("uploadVideo").addEventListener("change", (e) => {
-      if (selectedVideoSource !== 'file') return;
-      
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      // Check file size (max 100MB)
-      if (file.size > 100 * 1024 * 1024) {
-        showError('File too large. Max size is 100MB.');
-        alert('File too large. Please select a file smaller than 100MB.');
-        return;
-      }
-      
-      if (file.type.startsWith("video/")) {
-        updateStatus("Loading video...", "recording");
-        
-        const videoUrl = URL.createObjectURL(file);
-        videoPlayer.src = videoUrl;
-        videoPlayer.srcObject = null; // Clear any camera stream
-        videoPlayer.load();
-        
-        pauseVideoBtn.classList.remove("hidden");
-        updateStatus("Video loaded! Enable camera to continue.", "ready");
-      } else {
-        showError('Invalid file type. Please select a video file.');
-        alert("Please select a valid video file.");
-      }
-    });
-
-    // Video loaded handler
-    videoPlayer.addEventListener("loadedmetadata", () => {
-      if (selectedVideoSource === 'file') {
-        try {
-          const quality = videoQuality.value;
-          let width, height;
-          
-          const aspectRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
-          
-          switch(quality) {
-            case '1080p':
-              height = 1080;
-              width = Math.round(height * aspectRatio);
-              break;
-            case '720p':
-              height = 720;
-              width = Math.round(height * aspectRatio);
-              break;
-            case '480p':
-              height = 480;
-              width = Math.round(height * aspectRatio);
-              break;
-            default:
-              width = videoPlayer.videoWidth;
-              height = videoPlayer.videoHeight;
-          }
-          
-          canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          
-          const container = document.getElementById('videoContainer');
-          container.style.aspectRatio = `${aspectRatio}`;
-          
-          console.log(`Canvas: ${width}x${height}, Aspect: ${aspectRatio}`);
-          updateStatus(`Video ready (${width}x${height})`, "ready");
-        } catch (error) {
-          showError('Error processing video', error);
-        }
+        updateStatus(`Video ready (${width}x${height})`, "ready");
       }
     });
 
@@ -937,7 +863,8 @@
         startCameraBtn.disabled = true;
         updateStatus("Reaction camera ready! You can now record.", "ready");
       } catch (err) {
-        showError('Camera access failed', err);
+        console.error("Camera error:", err);
+        updateStatus("Camera access failed", "recording");
         alert("Please allow camera and microphone access for reaction overlay.");
       }
     }
@@ -955,22 +882,15 @@
       if (videoPlayer.paused) {
         videoPlayer.play();
         pauseVideoBtn.textContent = "⏸️ Pause";
+        isVideoPaused = false;
       } else {
         videoPlayer.pause();
         pauseVideoBtn.textContent = "▶️ Play";
+        isVideoPaused = true;
       }
     }
 
     pauseVideoBtn.addEventListener("click", toggleVideoPlayback);
-
-    // Auto-hide controls when playing
-    videoPlayer.addEventListener("play", () => {
-      mainControls.classList.add('playing');
-    });
-
-    videoPlayer.addEventListener("pause", () => {
-      mainControls.classList.remove('playing');
-    });
 
     // Touch and drag functionality for overlay
     function getTouchDistance(touch1, touch2) {
@@ -1089,29 +1009,17 @@
       reactionOverlay.classList.remove('resizing');
     });
 
-    // Recording timer function
-    function updateRecordingTimer() {
-      if (!isRecording) return;
-      
-      const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
-      const minutes = Math.floor(elapsed / 60);
-      const seconds = elapsed % 60;
-      
-      startRecordingBtn.textContent = `🔴 ${minutes}:${seconds.toString().padStart(2, '0')}`;
-      
-      recordingTimer = setTimeout(updateRecordingTimer, 1000);
-    }
-
     // Recording functions
     function resetRecordingUI() {
       startRecordingBtn.textContent = "🔴 Start Recording";
       startRecordingBtn.classList.remove("recording");
       startRecordingBtn.disabled = false;
       stopRecordingBtn.disabled = true;
+      recordingTimer.classList.remove("show");
       
-      if (recordingTimer) {
-        clearTimeout(recordingTimer);
-        recordingTimer = null;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
       }
     }
 
@@ -1120,26 +1028,26 @@
       
       // Validation
       if (!reactionOverlay.srcObject) {
-        showError("Please enable reaction camera first");
         alert("Please enable reaction camera first");
+        updateStatus("Reaction camera required", "recording");
         return;
       }
       
       if (selectedVideoSource === 'file' && !videoPlayer.src) {
-        showError("Please upload a video first");
         alert("Please upload a video first");
+        updateStatus("Video required", "recording");
         return;
       }
       
       if (selectedVideoSource === 'camera' && !videoPlayer.srcObject) {
-        showError("Please select a video input source first");
         alert("Please select a video input source first");
+        updateStatus("Video input required", "recording");
         return;
       }
       
       if (!canvas) {
-        showError("Please wait for video to load");
         alert("Please wait for video to load");
+        updateStatus("Loading video...", "recording");
         return;
       }
 
@@ -1147,11 +1055,17 @@
       recordedChunks = [];
       
       // UI updates
+      startRecordingBtn.textContent = "🔴 Recording...";
       startRecordingBtn.classList.add("recording");
       startRecordingBtn.disabled = true;
       stopRecordingBtn.disabled = false;
+      recordingTimer.classList.add("show");
       recordingStartTime = Date.now();
-      updateRecordingTimer();
+      
+      // Start timer
+      timerInterval = setInterval(updateTimer, 1000);
+      updateTimer();
+      
       updateStatus("Recording started! Click Stop when done.", "recording");
 
       const ctx = canvas.getContext("2d");
@@ -1165,8 +1079,8 @@
           ctx.fillStyle = '#000000';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Draw main video
-          if (videoPlayer.readyState >= 2) {
+          // Draw main video (only if not paused)
+          if (!isVideoPaused && videoPlayer.readyState >= 2) {
             ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
           }
           
@@ -1201,8 +1115,16 @@
               // Restore context
               ctx.restore();
               
-              // Draw border
-              ctx.strokeStyle = '#ff6b6b';
+              // Draw gradient border
+              const gradient = ctx.createLinearGradient(
+                centerX - radius, centerY - radius,
+                centerX + radius, centerY + radius
+              );
+              gradient.addColorStop(0, '#ffcc00');
+              gradient.addColorStop(0.5, '#ff9900');
+              gradient.addColorStop(1, '#ff6600');
+              
+              ctx.strokeStyle = gradient;
               ctx.lineWidth = 3;
               ctx.beginPath();
               ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
@@ -1309,33 +1231,22 @@
             const url = URL.createObjectURL(blob);
             previewVideo.src = url;
             previewContainer.classList.remove("hidden");
-            
-            // Show share button if Web Share API is supported
-            if (navigator.share) {
-              shareRecordingBtn.style.display = 'inline-block';
-            }
-            
             updateStatus("Recording completed! Preview and download below.", "ready");
           } else {
-            showError("Recording failed - no data captured");
+            updateStatus("Recording failed - no data captured", "recording");
             alert("Recording failed. Please try again.");
           }
           
           resetRecordingUI();
-          if (audioContext) {
-            audioContext.close();
-            audioContext = null;
-          }
+          if (audioContext) audioContext.close();
         };
 
         mediaRecorder.onerror = (event) => {
-          showError("Recording error occurred", event.error);
+          console.error("Recording error:", event.error);
+          updateStatus("Recording error occurred", "recording");
           alert("Recording error: " + event.error.message);
           resetRecordingUI();
-          if (audioContext) {
-            audioContext.close();
-            audioContext = null;
-          }
+          if (audioContext) audioContext.close();
         };
 
         // Start recording
@@ -1349,13 +1260,11 @@
         console.log("Recording started successfully");
 
       } catch (error) {
-        showError("Recording setup failed", error);
+        console.error("Recording setup failed:", error);
+        updateStatus("Recording setup failed", "recording");
         alert("Failed to start recording: " + error.message);
         resetRecordingUI();
-        if (audioContext) {
-          audioContext.close();
-          audioContext = null;
-        }
+        if (audioContext) audioContext.close();
       }
     }
 
@@ -1369,7 +1278,7 @@
         try {
           mediaRecorder.stop();
         } catch (error) {
-          showError("Error stopping recording", error);
+          console.error("Error stopping recording:", error);
           resetRecordingUI();
         }
       } else {
@@ -1397,33 +1306,11 @@
       updateStatus("Recording downloaded successfully!", "ready");
     });
 
-    // Share recording
-    shareRecordingBtn.addEventListener("click", async () => {
-      try {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const file = new File([blob], `reaction-video-${new Date().toISOString().replace(/[:.]/g, '-')}.webm`, 
-                            { type: 'video/webm' });
-        
-        if (navigator.share) {
-          await navigator.share({
-            title: 'My Reaction Video',
-            files: [file]
-          });
-          updateStatus("Video shared successfully!", "ready");
-        }
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          showError("Sharing failed", error);
-        }
-      }
-    });
-
     // Discard recording
     discardRecordingBtn.addEventListener("click", () => {
       previewContainer.classList.add("hidden");
       previewVideo.src = "";
       recordedChunks = [];
-      shareRecordingBtn.style.display = 'none';
       updateStatus("Recording discarded. Ready for new recording.", "ready");
     });
 
@@ -1447,21 +1334,6 @@
       setTimeout(() => {
         constrainPosition(reactionOverlay, videoPlayer);
       }, 500);
-    });
-
-    // Clean up when page is closed
-    window.addEventListener('beforeunload', () => {
-      if (isRecording) {
-        stopRecording();
-      }
-      
-      if (cameraStream) {
-        stopCameraStream();
-      }
-      
-      if (reactionOverlay.srcObject) {
-        reactionOverlay.srcObject.getTracks().forEach(t => t.stop());
-      }
     });
 
     console.log("Professional Video Recorder with source selection initialized successfully!");

@@ -793,9 +793,12 @@
       }
     });
 
-    // Video loaded handler
+     // Video loaded handler
     videoPlayer.addEventListener("loadedmetadata", () => {
       if (selectedVideoSource === 'file') {
+        // Set the video volume to the slider value
+        videoPlayer.volume = videoVolumeSlider.value;
+        
         const quality = videoQuality.value;
         let width, height;
         
@@ -830,6 +833,7 @@
         updateStatus(`Video ready (${width}x${height})`, "ready");
       }
     });
+
 
     // Camera functions (for reaction overlay)
     async function startCamera() {
@@ -1071,7 +1075,7 @@
       const ctx = canvas.getContext("2d");
       const fps = parseInt(frameRate.value);
       
-      function drawFrame() {
+    function drawFrame() {
         if (!isRecording) return;
         
         try {
@@ -1081,6 +1085,9 @@
           
           // Draw main video (only if not paused)
           if (!isVideoPaused && videoPlayer.readyState >= 2) {
+            ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
+          } else if (isVideoPaused && videoPlayer.readyState >= 2) {
+            // Draw the current frame even when paused
             ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
           }
           
@@ -1148,7 +1155,17 @@
         
         // Handle different video sources
         if (selectedVideoSource === 'file' && videoPlayer.src) {
+          // For file source, we need to handle audio differently to hear it during playback
           videoSource = audioContext.createMediaElementSource(videoPlayer);
+          
+          // Create a separate audio element for playback
+          const playbackAudio = document.createElement('audio');
+          playbackAudio.src = videoPlayer.src;
+          playbackAudio.volume = videoPlayer.volume;
+          playbackAudio.currentTime = videoPlayer.currentTime;
+          if (!isVideoPaused) {
+            playbackAudio.play().catch(e => console.log("Audio play failed:", e));
+          }
         } else if (selectedVideoSource === 'camera' && videoPlayer.srcObject) {
           videoSource = audioContext.createMediaStreamSource(videoPlayer.srcObject);
         }
@@ -1252,7 +1269,7 @@
         // Start recording
         isRecording = true;
         if (selectedVideoSource === 'file') {
-          videoPlayer.play();
+          videoPlayer.play().catch(e => console.log("Video play failed:", e));
         }
         mediaRecorder.start(100);
         drawFrame();

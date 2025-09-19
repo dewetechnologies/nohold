@@ -136,6 +136,7 @@
       background: #000;
       object-fit: contain;
       touch-action: none;
+      z-index: 1; /* Ensure videoPlayer is below reactionOverlay */
     }
     
     /* Camera overlay - improved for mobile with gradient yellow outline */
@@ -151,7 +152,7 @@
                   linear-gradient(to right, #ffcc00, #ff9900, #ff6600) border-box;
       object-fit: cover;
       background-color: #000;
-      z-index: 10;
+      z-index: 20; /* Higher z-index to ensure it's on top */
       box-shadow: 0 8px 25px rgba(0,0,0,0.4);
       cursor: grab;
       touch-action: none;
@@ -833,7 +834,6 @@
         updateStatus(`Video ready (${width}x${height})`, "ready");
       }
     });
-
 
     // Camera functions (for reaction overlay)
     async function startCamera() {

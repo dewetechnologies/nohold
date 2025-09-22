@@ -139,20 +139,41 @@
       z-index: 1;
     }
     
-    /* Camera bar at the top with yellow bottom outline */
-    #cameraFeed {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* fills container, crops excess */
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
+    /* Camera bar at the top with adjustable yellow line */
+    #cameraBar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 120px; /* Default height */
+      background: #000;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      border-bottom: 4px solid #ffcc00;
+    }
+    
     #cameraBar video {
       height: 100%;
-      width: auto;
+      width: 100%;
       object-fit: cover;
+    }
+    
+    /* Yellow line handle for adjusting height */
+    #lineHandle {
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 20px;
+      background: #ffcc00;
+      border-radius: 10px;
+      cursor: ns-resize;
+      z-index: 30;
+      touch-action: none;
     }
     
     /* Position controls */
@@ -535,10 +556,9 @@
     <div id="videoContainer">
       <video id="videoPlayer" crossorigin="anonymous" playsinline></video>
       <div id="cameraBar">
-  <video id="cameraFeed" autoplay muted playsinline></video>
-</div>
-
-
+        <video id="cameraFeed" autoplay muted playsinline></video>
+        <div id="lineHandle"></div>
+      </div>
     </div>
 
     <div class="controls" id="mainControls">
@@ -583,6 +603,8 @@
     const mainControls = document.getElementById("mainControls");
     const recordingTimer = document.getElementById("recordingTimer");
     const timerDisplay = document.getElementById("timerDisplay");
+    const cameraBar = document.getElementById("cameraBar");
+    const lineHandle = document.getElementById("lineHandle");
 
     // Video source elements
     const fileSourceOption = document.getElementById("fileSourceOption");
@@ -616,6 +638,7 @@
     let timerInterval = null;
     let isVideoPaused = false;
     let videoPosition = { x: 0, y: 0 };
+    let isResizingCameraBar = false;
 
     // Update status function
     function updateStatus(message, type = 'ready') {
@@ -951,6 +974,46 @@
       videoPlayer.style.transform = `translate(${videoPosition.x}px, ${videoPosition.y}px)`;
     }
 
+    // Camera bar height adjustment
+    lineHandle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      isResizingCameraBar = true;
+      document.addEventListener('mousemove', handleCameraBarResize);
+      document.addEventListener('mouseup', stopCameraBarResize);
+    });
+
+    lineHandle.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      isResizingCameraBar = true;
+      document.addEventListener('touchmove', handleCameraBarResizeTouch, { passive: false });
+      document.addEventListener('touchend', stopCameraBarResize);
+    });
+
+    function handleCameraBarResize(e) {
+      if (!isResizingCameraBar) return;
+      
+      const containerRect = videoContainer.getBoundingClientRect();
+      const newHeight = Math.max(60, Math.min(containerRect.height - 100, e.clientY - containerRect.top));
+      
+      cameraBar.style.height = `${newHeight}px`;
+    }
+
+    function handleCameraBarResizeTouch(e) {
+      if (!isResizingCameraBar) return;
+      e.preventDefault();
+      
+      const containerRect = videoContainer.getBoundingClientRect();
+      const newHeight = Math.max(60, Math.min(containerRect.height - 100, e.touches[0].clientY - containerRect.top));
+      
+      cameraBar.style.height = `${newHeight}px`;
+    }
+
+    function stopCameraBarResize() {
+      isResizingCameraBar = false;
+      document.removeEventListener('mousemove', handleCameraBarResize);
+      document.removeEventListener('touchmove', handleCameraBarResizeTouch);
+    }
+
     // Touch events for video positioning
     const videoContainer = document.getElementById('videoContainer');
     let touchStartX = 0;
@@ -958,7 +1021,7 @@
     let initialVideoPosition = { x: 0, y: 0 };
 
     videoContainer.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
+      if (e.touches.length === 1 && e.target.id !== 'lineHandle') {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
         initialVideoPosition = { ...videoPosition };
@@ -966,7 +1029,7 @@
     });
 
     videoContainer.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 1) {
+      if (e.touches.length === 1 && e.target.id !== 'lineHandle') {
         e.preventDefault();
         
         const touchX = e.touches[0].clientX;
@@ -1067,7 +1130,7 @@
           
           // Draw camera bar at the top
           if (cameraFeed.readyState >= 2) {
-            const barHeight = Math.min(canvas.height * 0.2, 200); // 20% of height or max 200px
+            const barHeight = Math.min(canvas.height * (parseInt(cameraBar.style.height) / videoContainer.offsetHeight), canvas.height * 0.5);
             const barWidth = canvas.width;
             
             // Draw camera feed
@@ -1285,7 +1348,7 @@
     // Initialize
     updateStatus("Select a video source to begin", "ready");
 
-    console.log("Professional Video Recorder with camera bar initialized successfully!");
+    console.log("Professional Video Recorder with adjustable camera bar initialized successfully!");
   </script>
 </body>
 </html>

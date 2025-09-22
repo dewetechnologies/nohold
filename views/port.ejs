@@ -540,9 +540,12 @@
 
     <div id="videoContainer">
       <video id="videoPlayer" crossorigin="anonymous" playsinline></video>
-      <div id="cameraBar">
-        <video id="cameraFeed" autoplay muted playsinline></video>
-      </div>
+      <div id="cameraBar" style="width:100%; height:100%; position:relative; overflow:hidden; background:black;">
+  <video id="cameraFeed" autoplay muted playsinline 
+    style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;">
+  </video>
+</div>
+
     </div>
 
     <div class="controls" id="mainControls">

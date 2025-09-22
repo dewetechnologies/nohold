@@ -58,6 +58,9 @@ const upload = multer({
 app.get("/", (_, res) => {
   res.render("index"); // renders views/index.ejs
 });
+app.get("/port", (_, res) => {
+  res.render("port"); // renders views/index.ejs
+});
 
 app.post("/upload", upload.single("video"), (req, res) => {
   if (!req.file) {

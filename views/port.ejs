@@ -140,21 +140,15 @@
     }
     
     /* Camera bar at the top with yellow bottom outline */
-    #cameraBar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 120px;
-      background: #000;
-      border-bottom: 4px solid #ffcc00;
-      z-index: 20;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-    
+    #cameraFeed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fills container, crops excess */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
     #cameraBar video {
       height: 100%;
       width: auto;

@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About - NoHold </title>
-  <!-- Modern CSS approach with Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Home - NoHold: Eliminate Hold Times in South Africa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -70,132 +69,118 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .team-member {
-      transition: all 0.3s ease;
-    }
-    .team-member:hover {
-      transform: translateY(-8px);
-    }
-    .team-member img {
-      transition: all 0.3s ease;
-    }
-    .team-member:hover img {
-      transform: scale(1.05);
-    }
   </style>
 </head>
 <body class="font-sans bg-gray-50 antialiased">
-  <%- include('partials/navbar') %>
+  <!-- Navigation -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <a href="/" class="text-2xl font-bold text-primary-700 flex items-center">
+            <i class="fa-solid fa-phone-volume mr-2 text-accent"></i>
+            NoHold
+          </a>
+        </div>
+        
+        <div class="hidden md:flex space-x-8">
+          <a href="/" class="text-primary-700 font-semibold border-b-2 border-accent">Home</a>
+          <a href="/about" class="text-gray-600 hover:text-primary-600 font-medium">About</a>
+          <a href="/how-it-works" class="text-gray-600 hover:text-primary-600 font-medium">How It Works</a>
+          <a href="/pricing" class="text-gray-600 hover:text-primary-600 font-medium">Pricing</a>
+          <a href="/contact" class="text-gray-600 hover:text-primary-600 font-medium">Contact</a>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <a href="/login" class="text-gray-600 hover:text-primary-600 font-medium">Log In</a>
+          <a href="/callback-request" class="bg-accent text-gray-900 px-4 py-2 rounded-full font-semibold hover:bg-yellow-500 transition-colors">
+            Get Callback
+          </a>
+        </div>
+        
+        <button class="md:hidden text-gray-600">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
 
   <div class="site-content">
     <!-- Hero Section -->
-    <section class="gradient-bg text-white py-20 text-center relative overflow-hidden" style="background-image: url('https://wallpapers.com/images/high/high-resolution-blue-background-1920-x-1200-5r9ckl2zujtomuo5.webp'); background-size: cover; background-position: center;">
-      <div class="absolute inset-0 bg-black opacity-10 pointer-events-none"></div>
+    <section class="gradient-bg text-white py-24 md:py-36 text-center relative overflow-hidden hero-pattern">
+      <div class="absolute inset-0 bg-black opacity-30 pointer-events-none"></div>
       <div class="container mx-auto px-4 relative z-10">
-        <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-slide-up">About NoHold </h1>
-        <p class="text-xl max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
-          Learn about our mission to transform customer service in South Africa through innovative technology
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-4 animate-slide-up">
+          Say Goodbye to Hold Music. Hello, <span class="text-accent">NoHold</span>.
+        </h1>
+        <p class="text-xl md:text-2xl max-w-4xl mx-auto mb-10 animate-slide-up" style="animation-delay: 0.1s">
+          The innovative South African platform that guarantees prompt customer service callbacks, without the queue.
         </p>
-      </div>
-      <div class="absolute bottom-0 left-0 right-0 h-16 bg-white transform skew-y-2 translate-y-8 z-20 pointer-events-none"></div>
-    </section>
-
-    <!-- Mission Section -->
-    <section class="py-16 bg-white">
-      <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row items-center gap-10 max-w-6xl mx-auto">
-          <div class="md:w-1/2">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">Our Mission</h2>
-            <p class="text-lg text-gray-700 mb-6">
-              NoHold  was created to eliminate the frustration of long hold times and inaccessible customer service. We believe everyone deserves prompt, efficient support regardless of their location or device.
-            </p>
-            <p class="text-lg text-gray-700">
-              Our platform integrates WhatsApp, USSD, and web technologies to deliver seamless customer service experiences across South Africa, making support accessible to everyone.
-            </p>
-          </div>
-          <div class="md:w-1/2">
-            <div class="bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl p-8 h-full">
-              <div class="flex items-center justify-center h-full">
-                <div class="text-center">
-                  <div class="inline-flex items-center justify-center w-20 h-20 bg-primary-600 text-white rounded-2xl text-3xl mb-6">
-                    <i class="fa-solid fa-bullseye"></i>
-                  </div>
-                  <h3 class="text-2xl font-semibold mb-4">Customer First</h3>
-                  <p class="text-gray-700">Putting South African customers at the center of everything we do</p>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="animate-slide-up" style="animation-delay: 0.2s">
+          <a href="/callback-request" class="bg-accent text-gray-900 px-10 py-5 rounded-full font-bold hover:bg-yellow-500 transition-colors text-xl inline-flex items-center justify-center shadow-lg transform hover:scale-105">
+            <i class="fa-solid fa-phone-volume mr-3"></i> Get a Guaranteed Callback
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- Values Section -->
-    <section class="py-16 bg-gray-50">
+    <!-- How It Works Section -->
+    <section class="py-20 bg-white">
       <div class="container mx-auto px-4">
-        <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Our Values</h2>
-        <p class="text-xl text-center text-gray-600 max-w-3xl mx-auto mb-12">These principles guide everything we do at NoHold </p>
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">How It Works: Seamless Support, Anywhere</h2>
+        <p class="text-xl text-center text-gray-600 max-w-3xl mx-auto mb-16">We bridge the gap between customers and service agents using the channels South Africans rely on.</p>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+          <!-- Step 1 -->
+          <div class="bg-white p-8 rounded-2xl shadow-xl card-hover border-t-4 border-primary-500">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 text-primary-600 rounded-xl text-2xl mb-6">
+              <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4">Channel Agnostic</h3>
+            <p class="text-gray-600">Submit a query via <strong>WhatsApp, USSD (*#120#NoHold), or our Web Form</strong>. Your request enters a single, prioritized queue.</p>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="bg-white p-8 rounded-2xl shadow-xl card-hover border-t-4 border-accent">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 text-accent rounded-xl text-2xl mb-6">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4">Zero Waiting Time</h3>
+            <p class="text-gray-600">You don't wait on hold. Our system connects you to the next available agent <strong>when your turn comes up</strong>.</p>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="bg-white p-8 rounded-2xl shadow-xl card-hover border-t-4 border-green-500">
             <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 text-green-600 rounded-xl text-2xl mb-6">
-              <i class="fa-solid fa-lightbulb"></i>
+              <i class="fa-solid fa-share-nodes"></i>
             </div>
-            <h3 class="text-2xl font-semibold mb-4">Innovation</h3>
-            <p class="text-gray-600">We continuously explore new technologies and approaches to improve customer service experiences.</p>
-          </div>
-          
-          <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 text-blue-600 rounded-xl text-2xl mb-6">
-              <i class="fa-solid fa-handshake"></i>
-            </div>
-            <h3 class="text-2xl font-semibold mb-4">Accessibility</h3>
-            <p class="text-gray-600">We believe quality support should be available to everyone, regardless of their device or location.</p>
-          </div>
-          
-          <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-100 text-purple-600 rounded-xl text-2xl mb-6">
-              <i class="fa-solid fa-heart"></i>
-            </div>
-            <h3 class="text-2xl font-semibold mb-4">Empathy</h3>
-            <p class="text-gray-600">We design our services with genuine care for customer frustrations and needs.</p>
+            <h3 class="text-2xl font-semibold mb-4">Agent Connection</h3>
+            <p class="text-gray-600">We initiate a <strong>direct callback</strong> to your number, ensuring you're connected to the right agent with minimal effort.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Team Section -->
-    <section class="py-16 bg-white">
-      <div class="container mx-auto px-4">
-        <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Our Team</h2>
-        <p class="text-xl text-center text-gray-600 max-w-3xl mx-auto mb-12">The passionate people behind NoHold </p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-          <div class="text-center team-member">
-            <div class="rounded-2xl overflow-hidden mb-4 shadow-md">
-              <img src="https://detwet.com/Pro.jpg" alt="Team Member" class="w-full h-64 object-cover">
-            </div>
-            <h3 class="text-xl font-semibold">Leon Motaung</h3>
-            <p class="text-primary-600">CEO & Founder</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Demo Notice -->
+    <!-- Stats Section -->
     <section class="py-16 bg-gray-50">
       <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8 md:p-12 text-center">
-          <div class="inline-flex items-center justify-center w-20 h-20 bg-yellow-100 text-yellow-600 rounded-2xl text-3xl mb-6">
-            <i class="fa-solid fa-flask"></i>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto text-center">
+          <div class="p-4">
+            <p class="text-6xl font-extrabold stat-number mb-2">95%</p>
+            <p class="text-lg font-medium text-gray-700">Callback Success Rate</p>
           </div>
-          <h2 class="text-3xl md:text-4xl font-bold mb-6">Demo Application</h2>
-          <p class="text-xl text-gray-700 mb-6">
-            This is a demonstration application showcasing key experiences such as query submission, user dashboard, and callback workflows.
-          </p>
-          <p class="text-lg text-gray-600">
-            Our goal is to illustrate how NoHold  can transform customer service experiences for South Africans.
-          </p>
+          <div class="p-4">
+            <p class="text-6xl font-extrabold stat-number mb-2">3</p>
+            <p class="text-lg font-medium text-gray-700">Supported SA Channels</p>
+          </div>
+          <div class="p-4">
+            <p class="text-6xl font-extrabold stat-number mb-2">4M+</p>
+            <p class="text-lg font-medium text-gray-700">Frustrated Minutes Saved</p>
+          </div>
+          <div class="p-4">
+            <p class="text-6xl font-extrabold stat-number mb-2">100%</p>
+            <p class="text-lg font-medium text-gray-700">Zero Hold Time Guarantee</p>
+          </div>
         </div>
       </div>
     </section>
@@ -203,19 +188,74 @@
     <!-- CTA Section -->
     <section class="py-16 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
       <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl md:text-4xl font-bold mb-6">Experience the Future of Customer Service</h2>
-        <p class="text-xl max-w-3xl mx-auto mb-10">Join thousands of satisfied customers who have eliminated hold times from their lives</p>
-        <a href="/contact" class="bg-accent text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-yellow-500 transition-colors text-lg inline-flex items-center justify-center mx-2">
-          <i class="fa-solid fa-phone mr-2"></i> Request a Callback
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Eliminate Hold Times?</h2>
+        <p class="text-xl max-w-3xl mx-auto mb-10">Use our demo to experience the guaranteed callback workflow right now.</p>
+        <a href="/dashboard" class="bg-accent text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-yellow-500 transition-colors text-lg inline-flex items-center justify-center mx-2 transform hover:scale-105 shadow-xl">
+          <i class="fa-solid fa-chart-line mr-2"></i> Visit the Demo Dashboard
         </a>
-        <a href="/contact" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-primary-600 transition-colors text-lg inline-flex items-center justify-center mx-2">
-          <i class="fa-solid fa-envelope mr-2"></i> Contact Us
+        <a href="/about" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-primary-600 transition-colors text-lg inline-flex items-center justify-center mx-2">
+          <i class="fa-solid fa-users mr-2"></i> Learn About Our Team
         </a>
       </div>
     </section>
   </div>
 
-  <%- include('partials/footer') %>
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-12">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-xl font-bold mb-4 flex items-center">
+            <i class="fa-solid fa-phone-volume mr-2 text-accent"></i>
+            NoHold
+          </h3>
+          <p class="text-gray-400">Eliminating hold times across South Africa, one callback at a time.</p>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+            <li><a href="/about" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+            <li><a href="/how-it-works" class="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
+            <li><a href="/pricing" class="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-semibold mb-4">Support</h4>
+          <ul class="space-y-2">
+            <li><a href="/contact" class="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
+            <li><a href="/faq" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+            <li><a href="/privacy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="/terms" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-semibold mb-4">Connect With Us</h4>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl">
+              <i class="fa-brands fa-facebook"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl">
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl">
+              <i class="fa-brands fa-linkedin"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+        <p>&copy; 2023 NoHold. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
   
   <script>
     // Add animations when elements come into view
@@ -234,8 +274,8 @@
         });
       }, observerOptions);
       
-      // Observe all cards and team members
-      document.querySelectorAll('.card-hover, .team-member').forEach(el => {
+      // Observe all cards for animation
+      document.querySelectorAll('.card-hover').forEach(el => {
         observer.observe(el);
       });
     });

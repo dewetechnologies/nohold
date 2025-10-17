@@ -67,6 +67,10 @@ app.get("/test", (_, res) => {
   res.render("test"); // renders views/index.ejs
 });
 
+app.get("/test1", (_, res) => {
+  res.render("test1"); // renders views/index.ejs
+});
+
 app.post("/upload", upload.single("video"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No video file uploaded" });

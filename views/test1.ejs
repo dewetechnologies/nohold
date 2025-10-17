@@ -1205,34 +1205,63 @@
         
         // Create final stream
         const canvasStream = canvas.captureStream(fps);
-        const audioTracks = mixedAudio.stream.getAudioTracks();
         
-        const finalStream = new MediaStream([canvasStream.getVideoTracks()[0]]);
-        if (audioTracks.length > 0) {
-          finalStream.addTrack(audioTracks[0]);
-        }
-
-        // MediaRecorder setup with fallbacks
-        let options;
-        if (MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus')) {
-          options = {
-            mimeType: 'video/webm; codecs=vp9,opus',
-            videoBitsPerSecond: 8000000,
-            audioBitsPerSecond: 128000
-          };
-        } else if (MediaRecorder.isTypeSupported('video/webm; codecs=vp8,opus')) {
-          options = {
-            mimeType: 'video/webm; codecs=vp8,opus',
-            videoBitsPerSecond: 5000000,
-            audioBitsPerSecond: 128000
-          };
+        // Build final stream: always include the canvas video track
+        const finalStream = new MediaStream();
+        finalStream.addTrack(canvasStream.getVideoTracks()[0]);
+        
+        // Prefer the mixedAudio output (combined video audio + mic)
+        if (mixedAudio && mixedAudio.stream && mixedAudio.stream.getAudioTracks().length > 0) {
+          mixedAudio.stream.getAudioTracks().forEach(track => finalStream.addTrack(track));
         } else {
-          options = {
-            mimeType: 'video/webm',
-            videoBitsPerSecond: 3000000,
-            audioBitsPerSecond: 128000
-          };
+          // Fallbacks: add reaction camera mic, selected video input mic, or file audio
+          try {
+            if (reactionOverlay.srcObject && reactionOverlay.srcObject.getAudioTracks) {
+              reactionOverlay.srcObject.getAudioTracks().forEach(t => finalStream.addTrack(t));
+            }
+          } catch (e) { /* ignore */ }
+
+          try {
+            if (selectedVideoSource === 'camera' && videoPlayer.srcObject && videoPlayer.srcObject.getAudioTracks) {
+              videoPlayer.srcObject.getAudioTracks().forEach(t => finalStream.addTrack(t));
+            }
+          } catch (e) { /* ignore */ }
+
+          // For file source, attempt to capture audio from the media element
+          try {
+            if (selectedVideoSource === 'file' && videoAudioElement) {
+              // Ensure crossOrigin to allow capture when applicable
+              videoAudioElement.crossOrigin = "anonymous";
+              // Some browsers support captureStream on <audio>
+              const audioCaptureStream = videoAudioElement.captureStream ? videoAudioElement.captureStream() : null;
+              if (audioCaptureStream && audioCaptureStream.getAudioTracks().length > 0) {
+                audioCaptureStream.getAudioTracks().forEach(t => finalStream.addTrack(t));
+              }
+            }
+          } catch (e) { /* ignore */ }
         }
+ 
+        // MediaRecorder setup with fallbacks
+         let options;
+         if (MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus')) {
+           options = {
+             mimeType: 'video/webm; codecs=vp9,opus',
+             videoBitsPerSecond: 8000000,
+             audioBitsPerSecond: 128000
+           };
+         } else if (MediaRecorder.isTypeSupported('video/webm; codecs=vp8,opus')) {
+           options = {
+             mimeType: 'video/webm; codecs=vp8,opus',
+             videoBitsPerSecond: 5000000,
+             audioBitsPerSecond: 128000
+           };
+         } else {
+           options = {
+             mimeType: 'video/webm',
+             videoBitsPerSecond: 3000000,
+             audioBitsPerSecond: 128000
+           };
+         }
 
         console.log("Using recording options:", options);
         

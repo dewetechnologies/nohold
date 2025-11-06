@@ -131,23 +131,21 @@
       touch-action: none;
     }
 
-    /* Reaction camera - top 30% */
+    /* Reaction camera - top 50% */
     #reactionOverlay {
       width: 100%;
-      height: 30%;
-      object-fit: cover;
-      border-bottom: 3px solid transparent;
-      background: linear-gradient(white, white) padding-box,
-                  linear-gradient(to right, #ffcc00, #ff9900, #ff6600) border-box;
+      height: 50%;
+      object-fit: contain;
+      background: #111;
       z-index: 10;
       user-select: none;
       -webkit-user-select: none;
     }
 
-    /* Main video - bottom 70% */
+    /* Main video - bottom 50% */
     #videoPlayer {
       width: 100%;
-      height: 70%;
+      height: 50%;
       object-fit: contain;
       background: #000;
       z-index: 1;
@@ -377,8 +375,6 @@
       .volume-control { flex-direction: column; text-align: center; min-width: 150px; }
       .quality-settings { flex-direction: column; align-items: center; }
     }
-
-    /* REMOVED: Landscape warning message */
   </style>
 </head>
 <body>
@@ -459,7 +455,7 @@
 
     <!-- Video Stack: Camera on Top, Main Video Below -->
     <div id="videoContainer">
-      <video id="reactionOverlay" autoplay muted playsinline></video>
+      <video id="reactionOverlay" autoplay playsinline></video>
       <video id="videoPlayer" crossorigin="anonymous" playsinline></video>
     </div>
 
@@ -639,7 +635,7 @@
         case '480p': h = 480; break;
         default: h = videoPlayer.videoHeight;
       }
-      w = Math.round(h * aspect);
+      w = Math.round(h * (9/16)); // Force 9:16 output
       canvas = document.createElement("canvas");
       canvas.width = w; canvas.height = h;
       updateStatus(`Ready (${w}x${h})`, "ready");
@@ -668,7 +664,7 @@
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: currentFacing },
-          audio: { echoCancellation: true, noiseSuppression: true }
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
         });
         reactionOverlay.srcObject = stream;
         startCameraBtn.textContent = "Camera Ready";
@@ -725,27 +721,37 @@
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        const topH = canvas.height * 0.3;
-        const botH = canvas.height * 0.7;
+        const topH = canvas.height * 0.5;
+        const botH = canvas.height - topH;
 
+        // CAMERA - top 50%
         if (reactionOverlay.readyState >= 2) {
-          ctx.drawImage(reactionOverlay, 0, 0, canvas.width, topH);
+          const camRatio = reactionOverlay.videoWidth / reactionOverlay.videoHeight;
+          const drawW = topH * camRatio;
+          const offsetX = (canvas.width - drawW) / 2;
+          ctx.drawImage(reactionOverlay, offsetX, 0, drawW, topH);
+
+          // Gradient border
           const grad = ctx.createLinearGradient(0, topH - 3, 0, topH);
           grad.addColorStop(0, '#ffcc00'); grad.addColorStop(0.5, '#ff9900'); grad.addColorStop(1, '#ff6600');
           ctx.strokeStyle = grad; ctx.lineWidth = 6;
           ctx.beginPath(); ctx.moveTo(0, topH); ctx.lineTo(canvas.width, topH); ctx.stroke();
         }
 
+        // MAIN VIDEO - bottom 50%
         if (videoPlayer.readyState >= 2) {
-          ctx.drawImage(videoPlayer, 0, topH, canvas.width, botH);
+          const vidRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
+          const drawW = botH * vidRatio;
+          const offsetX = (canvas.width - drawW) / 2;
+          ctx.drawImage(videoPlayer, offsetX, topH, drawW, botH);
         }
 
         if (isRecording) setTimeout(() => requestAnimationFrame(drawFrame), 1000 / fps);
       }
 
-      // Audio Setup
-      audioContext = new AudioContext();
-      let videoSource = selectedVideoSource === 'file' ?
+      // === AUDIO MIXING (You hear + record both) ===
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const videoSource = selectedVideoSource === 'file' ?
         audioContext.createMediaElementSource(videoPlayer) :
         audioContext.createMediaStreamSource(videoPlayer.srcObject);
 
@@ -755,20 +761,28 @@
       videoAudioGain.gain.value = videoVolumeSlider.value;
       cameraAudioGain.gain.value = cameraVolumeSlider.value;
 
-      const comp = audioContext.createDynamicsCompressor();
-      comp.threshold.value = -24; comp.knee.value = 30; comp.ratio.value = 12;
-      comp.attack.value = 0.003; comp.release.value = 0.25;
+      const compressor = audioContext.createDynamicsCompressor();
+      compressor.threshold.value = -24;
+      compressor.knee.value = 30;
+      compressor.ratio.value = 12;
+      compressor.attack.value = 0.003;
+      compressor.release.value = 0.25;
 
       mixedAudio = audioContext.createMediaStreamDestination();
 
-      videoSource.connect(videoAudioGain).connect(comp);
-      camSource.connect(cameraAudioGain).connect(comp);
-      comp.connect(mixedAudio);
+      videoSource.connect(videoAudioGain).connect(compressor);
+      camSource.connect(cameraAudioGain).connect(compressor);
+      compressor.connect(mixedAudio);
 
-      const finalStream = new MediaStream([canvas.captureStream(fps).getVideoTracks()[0]]);
-      if (mixedAudio.stream.getAudioTracks().length) finalStream.addTrack(mixedAudio.stream.getAudioTracks()[0]);
+      // Connect video audio to speakers (so you can hear it)
+      videoSource.connect(audioContext.destination);
 
-      const options = MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus') ? 
+      const finalStream = new MediaStream([
+        canvas.captureStream(fps).getVideoTracks()[0],
+        mixedAudio.stream.getAudioTracks()[0]
+      ]);
+
+      const options = MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus') ?
         { mimeType: 'video/webm; codecs=vp9,opus', videoBitsPerSecond: 8000000 } :
         { mimeType: 'video/webm', videoBitsPerSecond: 3000000 };
 
@@ -816,6 +830,7 @@
     });
 
     discardRecordingBtn.addEventListener("click", () => {
+ recipients
       previewContainer.classList.add("hidden");
       recordedChunks = [];
       updateStatus("Ready", "ready");

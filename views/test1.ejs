@@ -137,7 +137,16 @@
       object-fit: contain;
       touch-action: none;
       z-index: 1; /* Ensure videoPlayer is below reactionOverlay */
+      transform-origin: center center;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
     }
+    
+    #videoPlayer:active {
+      cursor: grabbing;
+    }
+
     
     /* Camera overlay - improved for mobile with gradient yellow outline */
     #reactionOverlay {
@@ -275,6 +284,69 @@
       background: #333;
       color: white;
     }
+
+    /* Layout & Adjustment controls */
+    .adjustment-controls {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .adjustment-option {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .adjustment-option select {
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: clamp(0.9rem, 2vw, 1rem);
+      cursor: pointer;
+      padding: 5px;
+      outline: none;
+    }
+    
+    .adjustment-option select option {
+      background: #333;
+      color: white;
+    }
+
+    .adjustment-option input[type="range"] {
+      width: 100px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      outline: none;
+      appearance: none;
+    }
+    
+    .adjustment-option input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #ff6b6b;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    button.btn-secondary {
+      background: linear-gradient(45deg, #4b6584, #a5b1c2);
+      box-shadow: 0 4px 15px rgba(75, 101, 132, 0.4);
+    }
+
+    button.btn-secondary:hover:not(:disabled) {
+      box-shadow: 0 8px 25px rgba(75, 101, 132, 0.6);
+    }
+
 
     /* Button styling - mobile optimized */
     .controls { 
@@ -503,6 +575,33 @@
       </div>
     </div>
 
+    <!-- Video layout and adjustments -->
+    <div class="adjustment-controls">
+      <div class="adjustment-option">
+        <label>Aspect Ratio:</label>
+        <select id="aspectRatioSelect">
+          <option value="original" selected>Original Video</option>
+          <option value="16-9">Landscape (16:9)</option>
+          <option value="9-16">Portrait (9:16)</option>
+          <option value="1-1">Square (1:1)</option>
+        </select>
+      </div>
+      <div class="adjustment-option">
+        <label>Video Fit:</label>
+        <select id="videoFitSelect">
+          <option value="contain" selected>Fit (Contain)</option>
+          <option value="cover">Fill (Cover)</option>
+        </select>
+      </div>
+      <div class="adjustment-option">
+        <label>Video Zoom:</label>
+        <input type="range" id="videoZoomSlider" min="1" max="4" step="0.1" value="1">
+        <span id="videoZoomValue">1.0x</span>
+      </div>
+      <button id="resetVideoAdjustments" class="btn-secondary">Reset Layout</button>
+    </div>
+
+
     <!-- Status indicator -->
     <div id="statusIndicator" class="status-indicator">
       <strong>Status:</strong> <span id="statusText">Select a video source to begin</span>
@@ -569,6 +668,13 @@
     const videoInputSelect = document.getElementById("videoInputSelect");
     const refreshInputsBtn = document.getElementById("refreshInputs");
 
+    // Layout adjustment elements
+    const aspectRatioSelect = document.getElementById("aspectRatioSelect");
+    const videoFitSelect = document.getElementById("videoFitSelect");
+    const videoZoomSlider = document.getElementById("videoZoomSlider");
+    const videoZoomValue = document.getElementById("videoZoomValue");
+    const resetVideoAdjustmentsBtn = document.getElementById("resetVideoAdjustments");
+
     // Global variables
     let cameraStream = null;
     let currentFacing = "user";
@@ -592,6 +698,18 @@
     let timerInterval = null;
     let isVideoPaused = false;
     let videoAudioElement = null;
+
+    // Main video layout & transform state
+    let isPanningVideo = false;
+    let videoStartX = 0;
+    let videoStartY = 0;
+    let videoPanX = 0;
+    let videoPanY = 0;
+    let videoZoom = 1.0;
+    let videoFit = 'contain'; // 'contain' or 'cover'
+    let initialVideoDistance = 0;
+    let initialVideoZoom = 1.0;
+
 
     // Update status function
     function updateStatus(message, type = 'ready') {
@@ -726,41 +844,76 @@
       }
     });
 
-    // Setup canvas for camera input
-    function setupCanvasForCamera() {
+    // Setup canvas dimensions based on quality and aspect ratio
+    function updateCanvasDimensions(targetRatio) {
+      if (!videoPlayer.videoWidth || !videoPlayer.videoHeight) return;
+      
       const quality = videoQuality.value;
       let width, height;
-      
-      const aspectRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
       
       switch(quality) {
         case '1080p':
           height = 1080;
-          width = Math.round(height * aspectRatio);
           break;
         case '720p':
           height = 720;
-          width = Math.round(height * aspectRatio);
           break;
         case '480p':
           height = 480;
-          width = Math.round(height * aspectRatio);
           break;
         default:
-          width = videoPlayer.videoWidth;
           height = videoPlayer.videoHeight;
       }
+      width = Math.round(height * targetRatio);
       
-      canvas = document.createElement("canvas");
+      if (!canvas) {
+        canvas = document.createElement("canvas");
+      }
       canvas.width = width;
       canvas.height = height;
       
-      const container = document.getElementById('videoContainer');
-      container.style.aspectRatio = `${aspectRatio}`;
-      
-      console.log(`Canvas: ${width}x${height}, Aspect: ${aspectRatio}`);
-      updateStatus(`Video input ready (${width}x${height})`, "ready");
+      console.log(`Canvas dimensions updated to ${width}x${height} for ratio ${targetRatio}`);
     }
+
+    // Update container aspect ratio and canvas dimensions
+    function updateAspectRatio() {
+      const selectedAspect = aspectRatioSelect.value;
+      const container = document.getElementById('videoContainer');
+      
+      let targetRatio;
+      
+      if (selectedAspect === 'original') {
+        if (videoPlayer.videoWidth && videoPlayer.videoHeight) {
+          targetRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
+        } else {
+          targetRatio = 16 / 9; // default fallback
+        }
+      } else if (selectedAspect === '16-9') {
+        targetRatio = 16 / 9;
+      } else if (selectedAspect === '9-16') {
+        targetRatio = 9 / 16;
+      } else if (selectedAspect === '1-1') {
+        targetRatio = 1;
+      }
+      
+      container.style.aspectRatio = `${targetRatio}`;
+      
+      updateCanvasDimensions(targetRatio);
+      
+      // Re-constrain reaction overlay position in the container
+      constrainPosition(reactionOverlay, container);
+    }
+
+    // Setup canvas for camera input
+    function setupCanvasForCamera() {
+      updateAspectRatio();
+      if (canvas) {
+        updateStatus(`Video input ready (${canvas.width}x${canvas.height})`, "ready");
+      } else {
+        updateStatus(`Video input ready`, "ready");
+      }
+    }
+
 
     // Volume control handlers
     videoVolumeSlider.addEventListener('input', () => {
@@ -803,40 +956,15 @@
         // Set the video volume to the slider value
         videoPlayer.volume = videoVolumeSlider.value;
         
-        const quality = videoQuality.value;
-        let width, height;
-        
-        const aspectRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
-        
-        switch(quality) {
-          case '1080p':
-            height = 1080;
-            width = Math.round(height * aspectRatio);
-            break;
-          case '720p':
-            height = 720;
-            width = Math.round(height * aspectRatio);
-            break;
-          case '480p':
-            height = 480;
-            width = Math.round(height * aspectRatio);
-            break;
-          default:
-            width = videoPlayer.videoWidth;
-            height = videoPlayer.videoHeight;
+        updateAspectRatio();
+        if (canvas) {
+          updateStatus(`Video ready (${canvas.width}x${canvas.height})`, "ready");
+        } else {
+          updateStatus(`Video ready`, "ready");
         }
-        
-        canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        
-        const container = document.getElementById('videoContainer');
-        container.style.aspectRatio = `${aspectRatio}`;
-        
-        console.log(`Canvas: ${width}x${height}, Aspect: ${aspectRatio}`);
-        updateStatus(`Video ready (${width}x${height})`, "ready");
       }
     });
+
 
     // Camera functions (for reaction overlay)
     async function startCamera() {
@@ -940,7 +1068,7 @@
       reactionOverlay.style.left = newLeft + "px";
       reactionOverlay.style.top = newTop + "px";
       
-      constrainPosition(reactionOverlay, videoPlayer);
+      constrainPosition(reactionOverlay, document.getElementById('videoContainer'));
     }
 
     function handleMouseUp() {
@@ -949,7 +1077,6 @@
       reactionOverlay.classList.remove('resizing');
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("mousemove", handleMouseResize);
     }
 
     // Touch events for overlay - improved pinch support
@@ -987,7 +1114,7 @@
         reactionOverlay.style.left = newLeft + "px";
         reactionOverlay.style.top = newTop + "px";
         
-        constrainPosition(reactionOverlay, videoPlayer);
+        constrainPosition(reactionOverlay, document.getElementById('videoContainer'));
         
       } else if (isResizing && e.touches.length === 2) {
         // Pinch to resize
@@ -999,7 +1126,7 @@
         let newSize = Math.max(80, Math.min(300, initialSize * scale));
         
         // Check container bounds
-        const containerRect = videoPlayer.getBoundingClientRect();
+        const containerRect = document.getElementById('videoContainer').getBoundingClientRect();
         const maxWidth = containerRect.width - reactionOverlay.offsetLeft;
         const maxHeight = containerRect.height - reactionOverlay.offsetTop;
         newSize = Math.min(newSize, Math.min(maxWidth, maxHeight));
@@ -1015,6 +1142,157 @@
       isResizing = false;
       reactionOverlay.classList.remove('resizing');
     });
+
+    // Main Video transformation events (Zoom and Pan)
+    function updateVideoTransform() {
+      videoPlayer.style.transform = `translate(${videoPanX}px, ${videoPanY}px) scale(${videoZoom})`;
+    }
+
+    function resetVideoPosition() {
+      videoPanX = 0;
+      videoPanY = 0;
+      videoZoom = 1.0;
+      videoZoomSlider.value = 1;
+      videoZoomValue.textContent = "1.0x";
+      updateVideoTransform();
+    }
+
+    // Mouse drag for main video player
+    videoPlayer.addEventListener("mousedown", (e) => {
+      if (e.target !== videoPlayer) return;
+      e.preventDefault();
+      isPanningVideo = true;
+      videoStartX = e.clientX - videoPanX;
+      videoStartY = e.clientY - videoPanY;
+      
+      document.addEventListener("mousemove", handleVideoMouseMove);
+      document.addEventListener("mouseup", handleVideoMouseUp);
+    });
+
+    function handleVideoMouseMove(e) {
+      if (!isPanningVideo) return;
+      videoPanX = e.clientX - videoStartX;
+      videoPanY = e.clientY - videoStartY;
+      updateVideoTransform();
+    }
+
+    function handleVideoMouseUp() {
+      isPanningVideo = false;
+      document.removeEventListener("mousemove", handleVideoMouseMove);
+      document.removeEventListener("mouseup", handleVideoMouseUp);
+    }
+
+    // Touch events for main video player
+    videoPlayer.addEventListener("touchstart", (e) => {
+      if (e.target !== videoPlayer) return;
+      if (e.touches.length === 1) {
+        e.preventDefault();
+        isPanningVideo = true;
+        const touch = e.touches[0];
+        videoStartX = touch.clientX - videoPanX;
+        videoStartY = touch.clientY - videoPanY;
+      } else if (e.touches.length === 2) {
+        e.preventDefault();
+        isPanningVideo = false;
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        initialVideoDistance = getTouchDistance(touch1, touch2);
+        initialVideoZoom = videoZoom;
+      }
+    });
+
+    videoPlayer.addEventListener("touchmove", (e) => {
+      if (isPanningVideo && e.touches.length === 1) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        videoPanX = touch.clientX - videoStartX;
+        videoPanY = touch.clientY - videoStartY;
+        updateVideoTransform();
+      } else if (e.touches.length === 2 && initialVideoDistance > 0) {
+        e.preventDefault();
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const currentDistance = getTouchDistance(touch1, touch2);
+        const scale = currentDistance / initialVideoDistance;
+        videoZoom = Math.max(1, Math.min(4, initialVideoZoom * scale));
+        
+        videoZoomSlider.value = videoZoom;
+        videoZoomValue.textContent = `${videoZoom.toFixed(1)}x`;
+        updateVideoTransform();
+      }
+    });
+
+    videoPlayer.addEventListener("touchend", (e) => {
+      isPanningVideo = false;
+      initialVideoDistance = 0;
+    });
+
+    // Control event listeners
+    aspectRatioSelect.addEventListener('change', updateAspectRatio);
+    
+    videoFitSelect.addEventListener('change', () => {
+      videoFit = videoFitSelect.value;
+      videoPlayer.style.objectFit = videoFit;
+      resetVideoPosition();
+    });
+
+    videoZoomSlider.addEventListener('input', () => {
+      videoZoom = parseFloat(videoZoomSlider.value);
+      videoZoomValue.textContent = `${videoZoom.toFixed(1)}x`;
+      updateVideoTransform();
+    });
+
+    resetVideoAdjustmentsBtn.addEventListener('click', () => {
+      resetVideoPosition();
+      videoFitSelect.value = 'contain';
+      videoFit = 'contain';
+      videoPlayer.style.objectFit = 'contain';
+      
+      aspectRatioSelect.value = 'original';
+      updateAspectRatio();
+    });
+
+    // Draw main video on recording canvas applying fit, zoom and pan
+    function drawVideoOnCanvas(ctx) {
+      if (videoPlayer.readyState < 2) return;
+      
+      const Wc = canvas.width;
+      const Hc = canvas.height;
+      const Wv = videoPlayer.videoWidth;
+      const Hv = videoPlayer.videoHeight;
+      
+      if (!Wv || !Hv) return;
+      
+      let scale;
+      if (videoFit === 'contain') {
+        scale = Math.min(Wc / Wv, Hc / Hv);
+      } else {
+        // cover
+        scale = Math.max(Wc / Wv, Hc / Hv);
+      }
+      
+      const wd = Wv * scale;
+      const hd = Hv * scale;
+      const xd = (Wc - wd) / 2;
+      const yd = (Hc - hd) / 2;
+      
+      const w = wd * videoZoom;
+      const h = hd * videoZoom;
+      
+      const containerRect = document.getElementById('videoContainer').getBoundingClientRect();
+      const scaleX = Wc / containerRect.width;
+      const scaleY = Hc / containerRect.height;
+      
+      const panXCanvas = videoPanX * scaleX;
+      const panYCanvas = videoPanY * scaleY;
+      
+      const xDraw = xd + panXCanvas - (w - wd) / 2;
+      const yDraw = yd + panYCanvas - (h - hd) / 2;
+      
+      ctx.drawImage(videoPlayer, xDraw, yDraw, w, h);
+    }
+
+
 
     // Recording functions
     function resetRecordingUI() {
@@ -1086,17 +1364,12 @@
           ctx.fillStyle = '#000000';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Draw main video (only if not paused)
-          if (!isVideoPaused && videoPlayer.readyState >= 2) {
-            ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
-          } else if (isVideoPaused && videoPlayer.readyState >= 2) {
-            // Draw the current frame even when paused
-            ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
-          }
+          // Draw main video (handling fit, zoom, pan)
+          drawVideoOnCanvas(ctx);
           
           // Draw reaction overlay
           if (reactionOverlay.readyState >= 2) {
-            const containerRect = videoPlayer.getBoundingClientRect();
+            const containerRect = document.getElementById('videoContainer').getBoundingClientRect();
             const overlayRect = reactionOverlay.getBoundingClientRect();
             
             const scaleX = canvas.width / containerRect.width;
@@ -1387,7 +1660,7 @@
 
     // Window resize handler
     window.addEventListener('resize', () => {
-      constrainPosition(reactionOverlay, videoPlayer);
+      constrainPosition(reactionOverlay, document.getElementById('videoContainer'));
     });
 
     // Initialize
@@ -1403,7 +1676,7 @@
     // Handle orientation change on mobile
     window.addEventListener('orientationchange', () => {
       setTimeout(() => {
-        constrainPosition(reactionOverlay, videoPlayer);
+        constrainPosition(reactionOverlay, document.getElementById('videoContainer'));
       }, 500);
     });
 
